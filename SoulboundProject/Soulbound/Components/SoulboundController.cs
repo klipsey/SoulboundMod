@@ -55,7 +55,7 @@ namespace SoulboundMod.Soulbound.Components
                 this.childLocator.FindChild("FireR").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMatInFront;
                 this.childLocator.FindChild("FireL").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMatInFront;
                 this.childLocator.FindChild("FireHead").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMatInFront;
-                this.childLocator.FindChild("FirePack").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMat;
+                this.childLocator.FindChild("FirePack").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMatInFront;
             }
         }
         #endregion
