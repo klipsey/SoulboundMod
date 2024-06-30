@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1524552460
+CRC: 1602759677
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: bac91b4b08c0929b277ef2aaf885e5b7
+    Hash: aef61dd019a079063bc53b3331329669
   TypeTreeHash:
     serializedVersion: 2
     Hash: 897be5ec5ed9716e42b7b82b4f6fb1f2
@@ -98,7 +98,6 @@ Assets:
 - Assets/Soulbound/Animations/maskSoulboundAim.mask
 - Assets/Soulbound/Textures/texGuiltyBuff.png
 - Assets/Soulbound/Projectiles/CoinProjectile.prefab
-- Assets/Soulbound/SoulboundDisplay.prefab
 - Assets/Soulbound/Textures/texGravekeeperTestDiffuse.png
 - Assets/Soulbound/Textures/BowD.png
 - Assets/Soulbound/Textures/HairD.png
@@ -139,6 +138,7 @@ Assets:
 - Assets/Soulbound/soulbound_emoteskeleton.prefab
 - Assets/Soulbound/Icons/texInterrogatorIcon.png
 - Assets/Soulbound/Projectiles/DriverStunGrenadeGhost.prefab
+- Assets/Soulbound/SoulboundDisplay.prefab
 - Assets/Soulbound/Projectiles/texRampCoin2.png
 - Assets/Soulbound/Textures/texGlowPaintMask.png
 - Assets/Soulbound/VFX/Badass/WoodHitEffect.prefab
