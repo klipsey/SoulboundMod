@@ -21,6 +21,7 @@ namespace SoulboundMod.Soulbound.Content
         //Materials
         internal static Material commandoMat;
         internal static Material fireMat;
+        internal static Material fireMatInFront;
 
         //Shader
         internal static Shader hotpoo = Resources.Load<Shader>("Shaders/Deferred/HGStandard");
@@ -88,6 +89,9 @@ namespace SoulboundMod.Soulbound.Content
         {
             fireMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
             fireMat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
+            fireMatInFront = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
+            fireMatInFront.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
+            fireMatInFront.SetFloat("_DepthOffset", -10f);
         }
 
         private static void CreateModels()

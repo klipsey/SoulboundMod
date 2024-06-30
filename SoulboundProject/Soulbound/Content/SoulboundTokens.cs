@@ -34,9 +34,9 @@ namespace SoulboundMod.Soulbound.Content
             string outro = "..and so he left, itching to enact more \"justice\".";
             string outroFailure = "..and so he vanished, punished for his crimes.";
             
-            Language.Add(prefix + "NAME", "Soulbound");
+            Language.Add(prefix + "NAME", "Spiritbound");
             Language.Add(prefix + "DESCRIPTION", desc);
-            Language.Add(prefix + "SUBTITLE", "Unhinged Tormentor");
+            Language.Add(prefix + "SUBTITLE", "The Eternal");
             Language.Add(prefix + "LORE", lore);
             Language.Add(prefix + "OUTRO_FLAVOR", outro);
             Language.Add(prefix + "OUTRO_FAILURE", outroFailure);
