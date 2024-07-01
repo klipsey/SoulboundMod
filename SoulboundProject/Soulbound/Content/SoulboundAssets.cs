@@ -22,6 +22,8 @@ namespace SoulboundMod.Soulbound.Content
         internal static Material commandoMat;
         internal static Material fireMat;
         internal static Material fireMatInFront;
+        internal static Material spiritBodyMat;
+        internal static Material spiritFurMat;
 
         //Shader
         internal static Shader hotpoo = Resources.Load<Shader>("Shaders/Deferred/HGStandard");
@@ -31,17 +33,10 @@ namespace SoulboundMod.Soulbound.Content
         internal static GameObject bloodExplosionEffect;
         internal static GameObject bloodSpurtEffect;
 
-        internal static GameObject batSwingEffect;
-        internal static GameObject swordSwingEffect;
-        internal static GameObject batHitEffect;
-
         internal static GameObject batHitEffectRed;
 
         internal static GameObject dashEffect;
 
-        internal static GameObject interrogatorGuilty;
-        internal static GameObject interrogatorConvicted;
-        internal static GameObject interrogatorConvictedConsume;
 
         //Models
 
@@ -52,8 +47,8 @@ namespace SoulboundMod.Soulbound.Content
         internal static NetworkSoundEventDef swordImpactSoundEvent;
 
         //Colors
-        internal static Color interrogatorColor = new Color(255f / 255f, 191f / 255f, 102f / 255f);
-        internal static Color interrogatorSecondaryColor = new Color(70f / 255f, 63f / 255f, 94f / 255f);
+        internal static Color soulBoundColor = new Color(255f / 255f, 191f / 255f, 102f / 255f);
+        internal static Color soulBoundSecondaryColor = new Color(70f / 255f, 63f / 255f, 94f / 255f);
 
         //Crosshair
         public static void Init(AssetBundle assetBundle)
@@ -89,9 +84,16 @@ namespace SoulboundMod.Soulbound.Content
         {
             fireMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
             fireMat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
+
             fireMatInFront = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
             fireMatInFront.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             fireMatInFront.SetFloat("_DepthOffset", -10f);
+
+            spiritBodyMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperDiffuse.mat").WaitForCompletion());
+            spiritBodyMat.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texSpiritDiffuse"));
+
+            spiritFurMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperFurDiffuse.mat").WaitForCompletion());
+            spiritFurMat.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texSpiritFurDiffuse"));
         }
 
         private static void CreateModels()
@@ -129,30 +131,8 @@ namespace SoulboundMod.Soulbound.Content
             dashEffect.transform.Find("Donut").localScale *= 0.5f;
             dashEffect.transform.Find("Donut, Distortion").localScale *= 0.5f;
             dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampDefault.png").WaitForCompletion());
-            dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", interrogatorColor);
+            dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", soulBoundColor);
             Modules.Content.CreateAndAddEffectDef(dashEffect);
-
-            batHitEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bandit2/HitsparkBandit.prefab").WaitForCompletion().InstantiateClone("InterreogatorBatHitEffect");
-            batHitEffect.AddComponent<NetworkIdentity>();
-            Modules.Content.CreateAndAddEffectDef(batHitEffect);
-
-            batHitEffectRed = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bandit2/HitsparkBandit.prefab").WaitForCompletion().InstantiateClone("InterreogatorBatRedHitEffect");
-            batHitEffectRed.AddComponent<NetworkIdentity>();
-            batHitEffectRed.transform.Find("Particles").Find("TriangleSparksLarge").gameObject.GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", Color.red);
-            batHitEffectRed.transform.Find("Particles").Find("TriangleSparks").gameObject.GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", Color.red);
-            Modules.Content.CreateAndAddEffectDef(batHitEffectRed);
-
-            batSwingEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Merc/MercSwordSlash.prefab").WaitForCompletion().InstantiateClone("SoulboundBatSwing", false);
-            batSwingEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressSwingTrail.mat").WaitForCompletion();
-            var swing = batSwingEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
-            swing.startLifetimeMultiplier *= 2f;
-
-            swordSwingEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Merc/MercSwordSlash.prefab").WaitForCompletion().InstantiateClone("SoulboundswordSwing", false);
-            swordSwingEffect.transform.GetChild(0).localScale *= 1.5f;
-            swordSwingEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matGenericSwingTrail.mat").WaitForCompletion();
-            swordSwingEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", interrogatorColor);
-            swing = swordSwingEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
-            swing.startLifetimeMultiplier *= 2f;
 
             bloodSplatterEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSlamImpact.prefab").WaitForCompletion().InstantiateClone("SoulboundSplat", true);
             bloodSplatterEffect.AddComponent<NetworkIdentity>();
@@ -175,29 +155,6 @@ namespace SoulboundMod.Soulbound.Content
             bloodSplatterEffect.transform.GetChild(15).gameObject.SetActive(false);
             bloodSplatterEffect.transform.localScale = Vector3.one;
             SoulboundMod.Modules.Content.CreateAndAddEffectDef(bloodSplatterEffect);
-
-            interrogatorConvicted = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/SlowOnHit/SlowDownTime.prefab").WaitForCompletion().InstantiateClone("Convicted", true);
-            interrogatorConvicted.AddComponent<NetworkIdentity>();
-            interrogatorConvicted.transform.Find("Visual").GetChild(0).gameObject.GetComponent<MeshRenderer>().materials[0].SetColor("_TintColor", new Color(166f / 255f, 159f / 255f, 20f / 255f));
-            interrogatorConvicted.transform.Find("Visual").GetChild(1).gameObject.GetComponent<MeshRenderer>().materials[0].SetColor("_TintColor", new Color(166f / 255f, 159f / 255f, 20f / 255f));
-
-            Material fakeMerc = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Merc/matMercExposed.mat").WaitForCompletion());
-            fakeMerc.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texGuilty"));
-            fakeMerc.SetColor("_TintColor", interrogatorColor);
-            interrogatorGuilty = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Merc/MercExposeEffect.prefab").WaitForCompletion().InstantiateClone("Guilty", true);
-            interrogatorGuilty.AddComponent<NetworkIdentity>();
-            interrogatorGuilty.transform.Find("Visual, On").Find("PulseEffect, Ring").gameObject.GetComponent<ParticleSystemRenderer>().material = fakeMerc;
-
-            fakeMerc = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Merc/matMercExposed.mat").WaitForCompletion());
-            fakeMerc.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texGuilty"));
-            fakeMerc.SetColor("_TintColor", Color.red);
-            interrogatorConvictedConsume = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Merc/MercExposeConsumeEffect.prefab").WaitForCompletion().InstantiateClone("ConvictMarked", true);
-            interrogatorConvictedConsume.AddComponent<NetworkIdentity>();
-            interrogatorConvictedConsume.transform.Find("Visual, Consumed").Find("PulseEffect, Ring (1)").gameObject.GetComponent<ParticleSystemRenderer>().material = fakeMerc;
-            interrogatorConvictedConsume.gameObject.GetComponent<EffectComponent>().soundName = "sfx_interrogator_point";
-            Object.Destroy(interrogatorConvictedConsume.transform.Find("Visual, Consumed").Find("PulseEffect, Slash").gameObject);
-
-            Modules.Content.CreateAndAddEffectDef(interrogatorConvictedConsume);
         }
 
         #endregion

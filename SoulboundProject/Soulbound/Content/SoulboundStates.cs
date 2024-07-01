@@ -10,11 +10,8 @@ namespace SoulboundMod.Soulbound.Content
             Modules.Content.AddEntityState(typeof(BaseSoulboundSkillState));
             Modules.Content.AddEntityState(typeof(MainState));
             Modules.Content.AddEntityState(typeof(BaseSoulboundState));
-            Modules.Content.AddEntityState(typeof(Swing));
-            Modules.Content.AddEntityState(typeof(ThrowCleaver));
-            Modules.Content.AddEntityState(typeof(Falsify));
-            Modules.Content.AddEntityState(typeof(Convict));
-            Modules.Content.AddEntityState(typeof(ConvictScepter));
+            Modules.Content.AddEntityState(typeof(SpiritBarrage));
+            Modules.Content.AddEntityState(typeof(SpiritMainState));
         }
     }
 }

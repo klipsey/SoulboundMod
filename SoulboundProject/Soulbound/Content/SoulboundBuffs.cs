@@ -13,16 +13,16 @@ namespace SoulboundMod.Soulbound.Content
         public static void Init(AssetBundle assetBundle)
         {
             interrogatorGuiltyBuff = Modules.Content.CreateAndAddBuff("SoulboundGuiltyBuff", assetBundle.LoadAsset<Sprite>("texGuiltyBuff"),
-                SoulboundAssets.interrogatorColor, true, false, false);
+                SoulboundAssets.soulBoundColor, true, false, false);
 
             interrogatorGuiltyDebuff = Modules.Content.CreateAndAddBuff("SoulboundGuiltyDebuff", assetBundle.LoadAsset<Sprite>("texGuiltyDebuff"),
-                SoulboundAssets.interrogatorColor, false, true, false);
+                SoulboundAssets.soulBoundColor, false, true, false);
 
             interrogatorPressuredBuff = Modules.Content.CreateAndAddBuff("SoulboundPressuredDebuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
-                SoulboundAssets.interrogatorColor, false, false, false);
+                SoulboundAssets.soulBoundColor, false, false, false);
             
             interrogatorConvictBuff = Modules.Content.CreateAndAddBuff("SoulboundConvictBuff", assetBundle.LoadAsset<Sprite>("texConvictBuff"), 
-                SoulboundAssets.interrogatorColor, true, false, false);
+                SoulboundAssets.soulBoundColor, true, false, false);
         }
     }
 }
