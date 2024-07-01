@@ -1,0 +1,40 @@
+MY ASS
+
+PASSIVE 
+
+KILL BOSSES GET STACKS
+
+PRIMARY
+
+CHARGE AND FIRE BOW, AUTO FIRES AT HIGH ATTACKSPEEDS. THREE HIT COMBO STACKING THAT CAUSES THE SPIRIT TO LUNGE AT THE TARGET OR SOME SHIT.
+
+SECONDARY 
+
+HOP AND FIRE OUT 3 ARROWS AT NEARBY ENEMIES. ARROWS DO NOT APPLY THE THREE HIT COMBO BULLSHIT. SPIRIT FIRES OUT WISPS WITH YOU (2 WISPS)
+
+UTILITY
+
+Swap locations with your spirit and explode at each others location firing off wisps to home in on enemies. 
+
+SPECIAL
+
+REDIRECT YOUR SPIRIT TO A TARGETED LOCATION CAUSING THEM TO FRENZY. BEING WITHIN x METERS OF THEM LOWERS YOUR SECONDARY COOLDOWN to 2 SECONDS. WHEN FRENZY ENDS, YOUR SPIRIT RETURNS TO YOU
+
+
+SPIRIT BEHAVIOUR
+
+Out of combat, linger near lamb
+
+if in combat but lamb does not apply 3 stacks, he will not fight
+
+in combat, attack nearest enemy with bite.
+
+when 3 stacks happens, spirit will lunge at the target. Damage can be directly applied without him doing shit so its buttery smooth
+
+When lamb leaps, he fires off two wisps
+
+when swapped, continue to attack shit nearby
+
+when redirected, he dashes to the location and begins to attack shit like a boss
+
+when special ends, he is teleported back 
