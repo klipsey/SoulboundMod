@@ -53,19 +53,19 @@ namespace SoulboundMod.Soulbound.Content
 
             #region Primary
             Language.Add(prefix + "PRIMARY_SWING_NAME", "Brutal Bash");
-            Language.Add(prefix + "PRIMARY_SWING_DESCRIPTION", $"Swing in front dealing <style=cIsDamage>{SoulboundStaticValues.swingDamageCoefficient * 100f}% damage</style>. " +
+            Language.Add(prefix + "PRIMARY_SWING_DESCRIPTION", $"Swing in front dealing <style=cIsDamage>{5 * 100f}% damage</style>. " +
                 $"Missing the attack causes you to take <style=cIsDamage>damage</style> instead.");
             #endregion
 
             #region Secondary
             Language.Add(prefix + "SECONDARY_AFFRAY_NAME", "Affray");
-            Language.Add(prefix + "SECONDARY_AFFRAY_DESCRIPTION", $"<style=cIsDamage>Slayer.</style> Launch a cleaver that deals <style=cIsDamage>{SoulboundStaticValues.cleaverDamageCoefficient * 100f}% damage</style>. " +
+            Language.Add(prefix + "SECONDARY_AFFRAY_DESCRIPTION", $"<style=cIsDamage>Slayer.</style> Launch a cleaver that deals <style=cIsDamage>{5 * 100f}% damage</style>. " +
                 $"If <color=#FFBF66>Affray</color> kills its target, apply <style=cIsDamage>Hemmorhage</style> and <color=#FFBF66>Pressure</color> to everyone in the area.");
             #endregion
 
             #region Utility 
             Language.Add(prefix + "UTILITY_FALSIFY_NAME", "Falsify");
-            Language.Add(prefix + "UTILITY_FALSIFY_DESCRIPTION", $"Dash forward dealing <style=cIsDamage>{SoulboundStaticValues.falsifyDamageCoefficient * 100f}% damage</style> applying <color=#FFBF66>Guilty</color> to targets hit.");
+            Language.Add(prefix + "UTILITY_FALSIFY_DESCRIPTION", $"Dash forward dealing <style=cIsDamage>{5 * 100f}% damage</style> applying <color=#FFBF66>Guilty</color> to targets hit.");
 
             #endregion
 

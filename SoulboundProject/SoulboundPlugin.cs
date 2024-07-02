@@ -51,6 +51,9 @@ namespace SoulboundMod
 
             // character initialization
             new SoulboundMod.Soulbound.SoulboundSurvivor().Initialize();
+            Log.Warning("HHAHAHHAHAHAAHHA");
+            new SoulboundMod.Soulbound.SpiritCharacter().Initialize();
+            Log.Warning("HHAHAHHAHAHAAHHA 2");
 
             // make a content pack and add it. this has to be last
             new Modules.ContentPacks().Initialize();

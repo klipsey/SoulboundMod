@@ -6,7 +6,7 @@ namespace SoulboundMod.Soulbound.Components
 {
     public class SoulboundPassive : MonoBehaviour
     {
-        public SkillDef interrogatorPassive;
+        public SkillDef soulboundPassive;
 
         public GenericSkill passiveSkillSlot;
 
@@ -14,9 +14,9 @@ namespace SoulboundMod.Soulbound.Components
         {
             get
             {
-                if (interrogatorPassive && passiveSkillSlot)
+                if (soulboundPassive && passiveSkillSlot)
                 {
-                    return passiveSkillSlot.skillDef == interrogatorPassive;
+                    return passiveSkillSlot.skillDef == soulboundPassive;
                 }
 
                 return false;

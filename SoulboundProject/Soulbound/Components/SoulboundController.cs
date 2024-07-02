@@ -24,13 +24,9 @@ namespace SoulboundMod.Soulbound.Components
         public string currentSkinNameToken => this.skinController.skins[this.skinController.currentSkinIndex].nameToken;
         public string altSkinNameToken => SoulboundSurvivor.SOULBOUND_PREFIX + "MASTERY_SKIN_NAME";
 
-        private bool hasPlayed = false;
-        public bool isConvicted => this.characterBody.HasBuff(SoulboundBuffs.interrogatorConvictBuff);
-        private bool stopwatchOut = false;
         public bool pauseTimer = false;
-        public bool hitSelf { get; private set; }
 
-        public float convictDurationMax;
+        private int currentStacks;
         private void Awake()
         {
             this.characterBody = this.GetComponent<CharacterBody>();
@@ -45,8 +41,8 @@ namespace SoulboundMod.Soulbound.Components
         }
         private void Start()
         {
+            currentStacks = 0;
         }
-        #region tooMuchCrap
        
         private void ApplySkin()
         {
@@ -58,11 +54,18 @@ namespace SoulboundMod.Soulbound.Components
                 this.childLocator.FindChild("FirePack").gameObject.GetComponent<ParticleSystemRenderer>().material = SoulboundAssets.fireMatInFront;
             }
         }
-        #endregion
         private void FixedUpdate()
         {
+            if(currentStacks != characterBody.GetBuffCount(SoulboundBuffs.soulStacksBuff))
+            {
+                if (NetworkServer.active) characterBody.SetBuffCount(SoulboundBuffs.soulStacksBuff.buffIndex, currentStacks);
+            }
         }
 
+        public void AddStackInternally()
+        {
+            currentStacks++;
+        }
         private void OnDestroy()
         {
         }

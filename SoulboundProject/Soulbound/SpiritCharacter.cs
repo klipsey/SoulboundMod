@@ -6,24 +6,17 @@ using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using RoR2.UI;
 using R2API;
-using R2API.Networking;
-using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using SoulboundMod.Soulbound.Components;
 using SoulboundMod.Soulbound.Content;
-using SoulboundMod.Soulbound.SkillStates;
-using HG;
 using EntityStates;
 using RoR2.CharacterAI;
-using EmotesAPI;
-using System.Runtime.CompilerServices;
 using EntityStates.LemurianMonster;
-using EntityStates.GravekeeperMonster.Weapon;
-using static RoR2.TeleporterInteraction;
+using SoulboundMod.Spirit.Components;
+using SoulboundMod.Spirit.SkillStates;
+
 
 namespace SoulboundMod.Soulbound
 {
@@ -37,10 +30,9 @@ namespace SoulboundMod.Soulbound
 
         internal static GameObject characterPrefab;
 
-        public static SkillDef convictScepterSkillDef;
-
         public override BodyInfo bodyInfo => new BodyInfo
         {
+            bodyNameToClone = "Drone1",
             bodyName = bodyName,
             bodyNameToken = SPIRIT_PREFIX + "NAME",
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
@@ -50,8 +42,8 @@ namespace SoulboundMod.Soulbound
             healthGrowth = 100f * 0.3f,
             healthRegen = 1f,
             armor = 0f,
-            moveSpeed = 24f,
-            acceleration = 150f,
+            moveSpeed = 12f,
+            acceleration = 100f,
         };
 
         public override CustomRendererInfo[] customRendererInfos => new CustomRendererInfo[]
@@ -72,13 +64,13 @@ namespace SoulboundMod.Soulbound
                     material = SoulboundAssets.spiritBodyMat
                 },
         };
-        public override ItemDisplaysBase itemDisplays => new SoulboundItemDisplays();
+        public override ItemDisplaysBase itemDisplays => new SpiritItemDisplays();
         public override AssetBundle assetBundle { get; protected set; }
         public override GameObject bodyPrefab { get; protected set; }
         public override CharacterBody prefabCharacterBody { get; protected set; }
         public override GameObject characterModelObject { get; protected set; }
         public override CharacterModel prefabCharacterModel { get; protected set; }
-        internal static List<string> followDrivers = new List<string>();
+
         internal static List<string> attackDrivers = new List<string>();
         internal static List<string> spiritItemBlackList = new List<string>()
         {
@@ -92,17 +84,26 @@ namespace SoulboundMod.Soulbound
         };
         public override void InitializeCharacter()
         {
-            base.InitializeCharacter();
-            AdditionalBodySetup();
+            InitializeCharacterBodyPrefab();
+
+            InitializeCharacterMaster();
+
             InitializeEntityStateMachines();
+
+            InitializeSkills();
+
+            AddHitboxes();
+
+            InitializeSkins();
+
+            AdditionalBodySetup();
+
             characterPrefab = bodyPrefab;
         }
 
         private void AdditionalBodySetup()
         {
-            AddHitboxes();
-            //bodyPrefab.AddComponent<SpiritController>();
-            InitializeCharacterMaster();
+            bodyPrefab.AddComponent<SpiritController>();
         }
         public void AddHitboxes()
         {
@@ -114,6 +115,7 @@ namespace SoulboundMod.Soulbound
             Prefabs.ClearEntityStateMachines(bodyPrefab);
 
             Prefabs.AddEntityStateMachine(bodyPrefab, "Weapon");
+            Prefabs.AddEntityStateMachine(bodyPrefab, "Weapon2");
 
             foreach (var i in bodyPrefab.GetComponents<AkEvent>())
             {
@@ -139,7 +141,8 @@ namespace SoulboundMod.Soulbound
             AddSkillDrivers(masterPrefab);
 
             Modules.Content.AddMasterPrefab(masterPrefab);
-            //FalconerComponent.summonPrefab = masterPrefab;
+
+            SpiritMasterComponent.summonPrefab = masterPrefab;
         }
 
         private void AddSkillDrivers(GameObject masterPrefab)
@@ -149,156 +152,138 @@ namespace SoulboundMod.Soulbound
             {
                 UnityEngine.Object.DestroyImmediate(i);
             }
+            AISkillDriver biteDriver = masterPrefab.AddComponent<AISkillDriver>();
+            biteDriver.customName = "BiteOffNodeGraph";
+            biteDriver.skillSlot = SkillSlot.Primary;
+            biteDriver.requireSkillReady = true;
+            biteDriver.minUserHealthFraction = float.NegativeInfinity;
+            biteDriver.maxUserHealthFraction = float.PositiveInfinity;
+            biteDriver.minTargetHealthFraction = float.NegativeInfinity;
+            biteDriver.maxTargetHealthFraction = float.PositiveInfinity;
+            biteDriver.minDistance = 0f;
+            biteDriver.maxDistance = 4f;
+            biteDriver.activationRequiresAimConfirmation = false;
+            biteDriver.activationRequiresTargetLoS = false;
+            biteDriver.selectionRequiresTargetLoS = true;
+            biteDriver.maxTimesSelected = -1;
+            biteDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            biteDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            biteDriver.aimType = AISkillDriver.AimType.AtMoveTarget;
+            biteDriver.moveInputScale = 1f;
+            biteDriver.ignoreNodeGraph = true;
+            biteDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            if (!attackDrivers.Contains(biteDriver.customName)) attackDrivers.Add(biteDriver.customName);
 
-            AISkillDriver strafeMissile = masterPrefab.AddComponent<AISkillDriver>();
-            strafeMissile.customName = "ShootMissilesStrafe";
-            strafeMissile.movementType = AISkillDriver.MovementType.StrafeMovetarget;
-            strafeMissile.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            strafeMissile.activationRequiresAimConfirmation = false;
-            strafeMissile.activationRequiresTargetLoS = true;
-            strafeMissile.selectionRequiresTargetLoS = false;
-            strafeMissile.maxTimesSelected = -1;
-            strafeMissile.maxDistance = 35f;
-            strafeMissile.minDistance = 0f;
-            strafeMissile.requireSkillReady = true;
-            strafeMissile.aimType = AISkillDriver.AimType.AtMoveTarget;
-            strafeMissile.ignoreNodeGraph = false;
-            strafeMissile.moveInputScale = 1f;
-            strafeMissile.driverUpdateTimerOverride = -1f;
-            strafeMissile.shouldSprint = false;
-            strafeMissile.shouldFireEquipment = false;
-            strafeMissile.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            strafeMissile.minTargetHealthFraction = Mathf.NegativeInfinity;
-            strafeMissile.maxTargetHealthFraction = Mathf.Infinity;
-            strafeMissile.minUserHealthFraction = float.NegativeInfinity;
-            strafeMissile.maxUserHealthFraction = float.PositiveInfinity;
-            strafeMissile.skillSlot = SkillSlot.Secondary;
-            if (!attackDrivers.Contains(strafeMissile.customName)) attackDrivers.Add(strafeMissile.customName);
+            AISkillDriver fireWisp = masterPrefab.AddComponent<AISkillDriver>();
+            fireWisp.customName = "FireWisps";
+            fireWisp.skillSlot = SkillSlot.Secondary;
+            fireWisp.requireSkillReady = true;
+            fireWisp.minUserHealthFraction = float.NegativeInfinity;
+            fireWisp.maxUserHealthFraction = float.PositiveInfinity;
+            fireWisp.minTargetHealthFraction = float.NegativeInfinity;
+            fireWisp.maxTargetHealthFraction = float.PositiveInfinity;
+            fireWisp.minDistance = 0f;
+            fireWisp.maxDistance = 40f;
+            fireWisp.activationRequiresAimConfirmation = true;
+            fireWisp.activationRequiresTargetLoS = true;
+            fireWisp.selectionRequiresTargetLoS = true;
+            fireWisp.maxTimesSelected = -1;
+            fireWisp.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            fireWisp.movementType = AISkillDriver.MovementType.StrafeMovetarget;
+            fireWisp.aimType = AISkillDriver.AimType.AtMoveTarget;
+            fireWisp.moveInputScale = 1f;
+            fireWisp.ignoreNodeGraph = false;
+            fireWisp.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            if (!attackDrivers.Contains(fireWisp.customName)) attackDrivers.Add(fireWisp.customName);
 
-            AISkillDriver chaseMissile = masterPrefab.AddComponent<AISkillDriver>();
-            chaseMissile.customName = "ShootMissilesChase";
-            chaseMissile.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            chaseMissile.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            chaseMissile.activationRequiresAimConfirmation = false;
-            chaseMissile.activationRequiresTargetLoS = true;
-            chaseMissile.selectionRequiresTargetLoS = false;
-            chaseMissile.maxTimesSelected = -1;
-            chaseMissile.maxDistance = 100f;
-            chaseMissile.minDistance = 30f;
-            chaseMissile.requireSkillReady = true;
-            chaseMissile.aimType = AISkillDriver.AimType.AtMoveTarget;
-            chaseMissile.ignoreNodeGraph = false;
-            chaseMissile.moveInputScale = 1f;
-            chaseMissile.driverUpdateTimerOverride = -1f;
-            chaseMissile.shouldSprint = true;
-            chaseMissile.shouldFireEquipment = false;
-            chaseMissile.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            chaseMissile.minTargetHealthFraction = Mathf.NegativeInfinity;
-            chaseMissile.maxTargetHealthFraction = Mathf.Infinity;
-            chaseMissile.minUserHealthFraction = float.NegativeInfinity;
-            chaseMissile.maxUserHealthFraction = float.PositiveInfinity;
-            chaseMissile.skillSlot = SkillSlot.Secondary;
-            if (!attackDrivers.Contains(chaseMissile.customName)) attackDrivers.Add(chaseMissile.customName);
+            AISkillDriver strafeDriver = masterPrefab.AddComponent<AISkillDriver>();
+            strafeDriver.customName = "StrafeNearTarget";
+            strafeDriver.skillSlot = SkillSlot.None;
+            strafeDriver.requireSkillReady = true;
+            strafeDriver.minUserHealthFraction = float.NegativeInfinity;
+            strafeDriver.maxUserHealthFraction = float.PositiveInfinity;
+            strafeDriver.minTargetHealthFraction = float.NegativeInfinity;
+            strafeDriver.maxTargetHealthFraction = float.PositiveInfinity;
+            strafeDriver.minDistance = 0f;
+            strafeDriver.maxDistance = 5f;
+            strafeDriver.activationRequiresAimConfirmation = false;
+            strafeDriver.activationRequiresTargetLoS = false;
+            strafeDriver.selectionRequiresTargetLoS = true;
+            strafeDriver.maxTimesSelected = -1;
+            strafeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            strafeDriver.movementType = AISkillDriver.MovementType.StrafeMovetarget;
+            strafeDriver.aimType = AISkillDriver.AimType.AtMoveTarget;
+            strafeDriver.moveInputScale = 1f;
+            strafeDriver.ignoreNodeGraph = true;
+            strafeDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            if (!attackDrivers.Contains(strafeDriver.customName)) attackDrivers.Add(strafeDriver.customName);
 
-            AISkillDriver strafeGun = masterPrefab.AddComponent<AISkillDriver>();
-            strafeGun.customName = "ShootGunsStrafe";
-            strafeGun.movementType = AISkillDriver.MovementType.StrafeMovetarget;
-            strafeGun.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            strafeGun.activationRequiresAimConfirmation = true;
-            strafeGun.activationRequiresTargetLoS = true;
-            strafeGun.selectionRequiresTargetLoS = false;
-            strafeGun.maxTimesSelected = -1;
-            strafeGun.maxDistance = 35f;
-            strafeGun.minDistance = 0f;
-            strafeGun.requireSkillReady = true;
-            strafeGun.aimType = AISkillDriver.AimType.AtMoveTarget;
-            strafeGun.ignoreNodeGraph = false;
-            strafeGun.moveInputScale = 1f;
-            strafeGun.driverUpdateTimerOverride = -1f;
-            strafeGun.shouldSprint = false;
-            strafeGun.shouldFireEquipment = false;
-            strafeGun.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            strafeGun.minTargetHealthFraction = Mathf.NegativeInfinity;
-            strafeGun.maxTargetHealthFraction = Mathf.Infinity;
-            strafeGun.minUserHealthFraction = float.NegativeInfinity;
-            strafeGun.maxUserHealthFraction = float.PositiveInfinity;
-            strafeGun.skillSlot = SkillSlot.Primary;
-            if (!attackDrivers.Contains(strafeGun.customName)) attackDrivers.Add(strafeGun.customName);
+            AISkillDriver chaseNearDriver = masterPrefab.AddComponent<AISkillDriver>();
+            chaseNearDriver.customName = "ChaseTargetClose";
+            chaseNearDriver.skillSlot = SkillSlot.None;
+            chaseNearDriver.requireSkillReady = true;
+            chaseNearDriver.minUserHealthFraction = float.NegativeInfinity;
+            chaseNearDriver.maxUserHealthFraction = float.PositiveInfinity;
+            chaseNearDriver.minTargetHealthFraction = float.NegativeInfinity;
+            chaseNearDriver.maxTargetHealthFraction = float.PositiveInfinity;
+            chaseNearDriver.minDistance = 0f;
+            chaseNearDriver.maxDistance = 10f;
+            chaseNearDriver.activationRequiresAimConfirmation = false;
+            chaseNearDriver.activationRequiresTargetLoS = false;
+            chaseNearDriver.selectionRequiresTargetLoS = true;
+            chaseNearDriver.maxTimesSelected = -1;
+            chaseNearDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            chaseNearDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            chaseNearDriver.aimType = AISkillDriver.AimType.AtMoveTarget;
+            chaseNearDriver.moveInputScale = 1f;
+            chaseNearDriver.ignoreNodeGraph = true;
+            chaseNearDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            if (!attackDrivers.Contains(strafeDriver.customName)) attackDrivers.Add(strafeDriver.customName);
 
-            AISkillDriver chaseGun = masterPrefab.AddComponent<AISkillDriver>();
-            chaseGun.customName = "ShootGunsChase";
-            chaseGun.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            chaseGun.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            chaseGun.activationRequiresAimConfirmation = true;
-            chaseGun.activationRequiresTargetLoS = true;
-            chaseGun.selectionRequiresTargetLoS = false;
-            chaseGun.maxTimesSelected = -1;
-            chaseGun.maxDistance = 100f;
-            chaseGun.minDistance = 30f;
-            chaseGun.requireSkillReady = true;
-            chaseGun.aimType = AISkillDriver.AimType.AtMoveTarget;
-            chaseGun.ignoreNodeGraph = false;
-            chaseGun.moveInputScale = 1f;
-            chaseGun.driverUpdateTimerOverride = -1f;
-            chaseGun.shouldSprint = true;
-            chaseGun.shouldFireEquipment = false;
-            chaseGun.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            chaseGun.minTargetHealthFraction = Mathf.NegativeInfinity;
-            chaseGun.maxTargetHealthFraction = Mathf.Infinity;
-            chaseGun.minUserHealthFraction = float.NegativeInfinity;
-            chaseGun.maxUserHealthFraction = float.PositiveInfinity;
-            chaseGun.skillSlot = SkillSlot.Primary;
-            if (!attackDrivers.Contains(chaseGun.customName)) attackDrivers.Add(chaseGun.customName);
+            AISkillDriver chaseFarDriver = masterPrefab.AddComponent<AISkillDriver>();
+            chaseFarDriver.customName = "ChaseFromAfar";
+            chaseFarDriver.skillSlot = SkillSlot.None;
+            chaseFarDriver.requireSkillReady = true;
+            chaseFarDriver.minUserHealthFraction = float.NegativeInfinity;
+            chaseFarDriver.maxUserHealthFraction = float.PositiveInfinity;
+            chaseFarDriver.minTargetHealthFraction = float.NegativeInfinity;
+            chaseFarDriver.maxTargetHealthFraction = float.PositiveInfinity;
+            chaseFarDriver.minDistance = 0f;
+            chaseFarDriver.maxDistance = float.PositiveInfinity;
+            chaseFarDriver.activationRequiresAimConfirmation = false;
+            chaseFarDriver.activationRequiresTargetLoS = false;
+            chaseFarDriver.selectionRequiresTargetLoS = false;
+            chaseFarDriver.maxTimesSelected = -1;
+            chaseFarDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            chaseFarDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            chaseFarDriver.aimType = AISkillDriver.AimType.AtMoveTarget;
+            chaseFarDriver.moveInputScale = 1f;
+            chaseFarDriver.ignoreNodeGraph = false;
+            chaseFarDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            chaseFarDriver.shouldSprint = true;
+            if (!attackDrivers.Contains(chaseFarDriver.customName)) attackDrivers.Add(chaseFarDriver.customName);
 
-            AISkillDriver chaseEnemies = masterPrefab.AddComponent<AISkillDriver>();
-            chaseEnemies.customName = "ChaseEnemies";
-            chaseEnemies.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            chaseEnemies.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            chaseEnemies.activationRequiresAimConfirmation = false;
-            chaseEnemies.activationRequiresTargetLoS = false;
-            chaseEnemies.selectionRequiresTargetLoS = false;
-            chaseEnemies.maxTimesSelected = -1;
-            chaseEnemies.maxDistance = float.PositiveInfinity;
-            chaseEnemies.minDistance = 0f;
-            chaseEnemies.requireSkillReady = true;
-            chaseEnemies.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            chaseEnemies.ignoreNodeGraph = false;
-            chaseEnemies.moveInputScale = 1f;
-            chaseEnemies.driverUpdateTimerOverride = -1f;
-            chaseEnemies.shouldSprint = false;
-            chaseEnemies.shouldFireEquipment = false;
-            chaseEnemies.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            chaseEnemies.minTargetHealthFraction = Mathf.NegativeInfinity;
-            chaseEnemies.maxTargetHealthFraction = Mathf.Infinity;
-            chaseEnemies.minUserHealthFraction = float.NegativeInfinity;
-            chaseEnemies.maxUserHealthFraction = float.PositiveInfinity;
-            chaseEnemies.skillSlot = SkillSlot.None;
-            if (!attackDrivers.Contains(chaseEnemies.customName)) attackDrivers.Add(chaseEnemies.customName);
-
-            AISkillDriver doNothing = masterPrefab.AddComponent<AISkillDriver>();
-            doNothing.customName = "DoNothing";
-            doNothing.movementType = AISkillDriver.MovementType.Stop;
-            doNothing.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            doNothing.activationRequiresAimConfirmation = true;
-            doNothing.activationRequiresTargetLoS = true;
-            doNothing.selectionRequiresTargetLoS = false;
-            doNothing.maxTimesSelected = -1;
-            doNothing.maxDistance = float.PositiveInfinity;
-            doNothing.minDistance = 0f;
-            doNothing.requireSkillReady = true;
-            doNothing.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            doNothing.ignoreNodeGraph = false;
-            doNothing.moveInputScale = 1f;
-            doNothing.driverUpdateTimerOverride = -1f;
-            doNothing.shouldSprint = false;
-            doNothing.shouldFireEquipment = false;
-            doNothing.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            doNothing.minTargetHealthFraction = Mathf.NegativeInfinity;
-            doNothing.maxTargetHealthFraction = Mathf.Infinity;
-            doNothing.minUserHealthFraction = float.NegativeInfinity;
-            doNothing.maxUserHealthFraction = float.PositiveInfinity;
-            doNothing.skillSlot = SkillSlot.Primary;
-            if (!attackDrivers.Contains(doNothing.customName)) attackDrivers.Add(doNothing.customName);
+            AISkillDriver idleDriver = masterPrefab.AddComponent<AISkillDriver>();
+            idleDriver.customName = "DoNothing";
+            idleDriver.skillSlot = SkillSlot.None;
+            idleDriver.requireSkillReady = true;
+            idleDriver.minUserHealthFraction = float.NegativeInfinity;
+            idleDriver.maxUserHealthFraction = float.PositiveInfinity;
+            idleDriver.minTargetHealthFraction = float.NegativeInfinity;
+            idleDriver.maxTargetHealthFraction = float.PositiveInfinity;
+            idleDriver.minDistance = 0f;
+            idleDriver.maxDistance = float.PositiveInfinity;
+            idleDriver.activationRequiresAimConfirmation = false;
+            idleDriver.activationRequiresTargetLoS = false;
+            idleDriver.selectionRequiresTargetLoS = false;
+            idleDriver.maxTimesSelected = -1;
+            idleDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            idleDriver.movementType = AISkillDriver.MovementType.Stop;
+            idleDriver.aimType = AISkillDriver.AimType.None;
+            idleDriver.moveInputScale = 1f;
+            idleDriver.ignoreNodeGraph = false;
+            idleDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            if (!attackDrivers.Contains(idleDriver.customName)) attackDrivers.Add(idleDriver.customName);
 
             AISkillDriver hardLeash = masterPrefab.AddComponent<AISkillDriver>();
             hardLeash.customName = "HardLeashToLeader";
@@ -378,66 +363,81 @@ namespace SoulboundMod.Soulbound
         {
             bodyPrefab.AddComponent<SoulboundPassive>();
             Skills.CreateSkillFamilies(bodyPrefab);
+            AddPassiveSkills();
             AddPrimarySkills();
             AddSecondarySkills();
             AddUtilitySkills();
             AddSpecialSkills();
             //if (SoulboundPlugin.scepterInstalled) InitializeScepter();
         }
-
-        private void AddPrimarySkills()
+        private void AddPassiveSkills()
         {
-            SkillDef headbutt = Skills.CreateSkillDef<SkillDef>(new SkillDefInfo
+            SoulboundPassive passive = bodyPrefab.GetComponent<SoulboundPassive>();
+
+            SkillLocator skillLocator = bodyPrefab.GetComponent<SkillLocator>();
+
+            skillLocator.passiveSkill.enabled = false;
+
+            passive.soulboundPassive = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "Bite",
-                skillNameToken = SPIRIT_PREFIX + "SECONDARY_AFFRAY_NAME",
-                skillDescriptionToken = SPIRIT_PREFIX + "SECONDARY_AFFRAY_DESCRIPTION",
+                skillName = SPIRIT_PREFIX + "PASSIVE_NAME",
+                skillNameToken = SPIRIT_PREFIX + "PASSIVE_NAME",
+                skillDescriptionToken = SPIRIT_PREFIX + "PASSIVE_DESCRIPTION",
+                skillIcon = assetBundle.LoadAsset<Sprite>("texDefaultSkin"),
                 keywordTokens = new string[] { },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texSoulboundCleaverIcon"),
-
-                activationState = new SerializableEntityStateType(typeof(Bite)),
-
-                activationStateMachineName = "Weapon",
-                interruptPriority = InterruptPriority.Skill,
-
+                activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
+                activationStateMachineName = "",
                 baseMaxStock = 1,
-                baseRechargeInterval = 1f,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-
-                resetCooldownTimerOnUse = false,
-                fullRestockOnAssign = true,
-                dontAllowPastMaxStocks = false,
-                beginSkillCooldownOnSkillEnd = true,
-                mustKeyPress = false,
-
-                isCombatSkill = true,
+                baseRechargeInterval = 0f,
+                beginSkillCooldownOnSkillEnd = false,
                 canceledFromSprinting = false,
-                cancelSprintingOnActivation = false,
                 forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.Any,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = false,
+                mustKeyPress = false,
+                cancelSprintingOnActivation = false,
+                rechargeStock = 1,
+                requiredStock = 2,
+                stockToConsume = 1
             });
 
-            Skills.AddPrimarySkills(bodyPrefab, headbutt);
+            Skills.AddPassiveSkills(passive.passiveSkillSlot.skillFamily, passive.soulboundPassive);
+        }
+        private void AddPrimarySkills()
+        {
+            SteppedSkillDef bite = Skills.CreateSkillDef<SteppedSkillDef>(new SkillDefInfo
+                (
+                    "Bite",
+                    SPIRIT_PREFIX + "PRIMARY_BITE_NAME",
+                    SPIRIT_PREFIX + "PRIMARY_BITE_DESCRIPTION",
+                    assetBundle.LoadAsset<Sprite>("texSpiritBiteIcon"),
+                    new SerializableEntityStateType(typeof(SpiritBite)),
+                    "Weapon"
+                ));
+            bite.stepCount = 1;
+            bite.stepGraceDuration = 0.1f;
+            Skills.AddPrimarySkills(bodyPrefab, bite);
         }
 
         private void AddSecondarySkills()
         {
             SkillDef fireSpirit = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "SpiritOrb",
-                skillNameToken = SPIRIT_PREFIX + "SECONDARY_AFFRAY_NAME",
-                skillDescriptionToken = SPIRIT_PREFIX + "SECONDARY_AFFRAY_DESCRIPTION",
+                skillName = "Fire Orb",
+                skillNameToken = SPIRIT_PREFIX + "SECONDARY_ORB_NAME",
+                skillDescriptionToken = SPIRIT_PREFIX + "SECONDARY_ORB_DESCRIPTION",
                 keywordTokens = new string[] { },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texSoulboundCleaverIcon"),
+                skillIcon = assetBundle.LoadAsset<Sprite>("texSpiritOrbIcon"),
 
                 activationState = new SerializableEntityStateType(typeof(SpiritBarrage)),
 
-                activationStateMachineName = "Weapon",
-                interruptPriority = InterruptPriority.Skill,
+                activationStateMachineName = "Weapon2",
+                interruptPriority = InterruptPriority.PrioritySkill,
 
                 baseMaxStock = 1,
-                baseRechargeInterval = 7f,
+                baseRechargeInterval = 6f,
                 rechargeStock = 1,
                 requiredStock = 1,
                 stockToConsume = 1,
@@ -451,7 +451,7 @@ namespace SoulboundMod.Soulbound
                 isCombatSkill = true,
                 canceledFromSprinting = false,
                 cancelSprintingOnActivation = false,
-                forceSprintDuringState = false,
+                forceSprintDuringState = false
             });
 
             Skills.AddSecondarySkills(bodyPrefab, fireSpirit);
@@ -459,11 +459,11 @@ namespace SoulboundMod.Soulbound
 
         private void AddUtilitySkills()
         {
-            SkillDef dashToSpirit = Skills.CreateSkillDef(new SkillDefInfo
+            SkillDef idle = Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = "Idle",
-                skillNameToken = SPIRIT_PREFIX + "UTILITY_FALSIFY_NAME",
-                skillDescriptionToken = SPIRIT_PREFIX + "UTILITY_FALSIFY_DESCRIPTION",
+                skillNameToken = SPIRIT_PREFIX + "IDLE_NAME",
+                skillDescriptionToken = SPIRIT_PREFIX + "IDLE_DESCRIPTION",
                 keywordTokens = new string[] { },
                 skillIcon = assetBundle.LoadAsset<Sprite>("texFalsifyIcon"),
 
@@ -488,19 +488,18 @@ namespace SoulboundMod.Soulbound
                 canceledFromSprinting = false,
                 cancelSprintingOnActivation = false,
                 forceSprintDuringState = true,
-
             });
 
-            Skills.AddUtilitySkills(bodyPrefab, dashToSpirit);
+            Skills.AddUtilitySkills(bodyPrefab, idle);
         }
 
         private void AddSpecialSkills()
         {
-            SkillDef convict = Skills.CreateSkillDef<SoulboundSkillDef>(new SkillDefInfo
+            SkillDef idle2 = Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = "Idle",
-                skillNameToken = SPIRIT_PREFIX + "UTILITY_FALSIFY_NAME",
-                skillDescriptionToken = SPIRIT_PREFIX + "UTILITY_FALSIFY_DESCRIPTION",
+                skillNameToken = SPIRIT_PREFIX + "IDLE_NAME",
+                skillDescriptionToken = SPIRIT_PREFIX + "IDLE_DESCRIPTION",
                 keywordTokens = new string[] { },
                 skillIcon = assetBundle.LoadAsset<Sprite>("texFalsifyIcon"),
 
@@ -527,7 +526,7 @@ namespace SoulboundMod.Soulbound
                 forceSprintDuringState = true,
             });
 
-            Skills.AddSpecialSkills(bodyPrefab, convict);
+            Skills.AddSpecialSkills(bodyPrefab, idle2);
         }
         #endregion skills
 

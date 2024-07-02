@@ -6,22 +6,13 @@ namespace SoulboundMod.Soulbound.Content
 {
     public static class SoulboundBuffs
     {
-        public static BuffDef interrogatorGuiltyDebuff;
-        public static BuffDef interrogatorGuiltyBuff;
-        public static BuffDef interrogatorPressuredBuff;
-        public static BuffDef interrogatorConvictBuff;
+        public static BuffDef mountingDreadBuff;
+        public static BuffDef soulStacksBuff;
         public static void Init(AssetBundle assetBundle)
         {
-            interrogatorGuiltyBuff = Modules.Content.CreateAndAddBuff("SoulboundGuiltyBuff", assetBundle.LoadAsset<Sprite>("texGuiltyBuff"),
+            mountingDreadBuff = Modules.Content.CreateAndAddBuff("SoulboundMountingDreadBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/AttackSpeedOnCrit/texBuffAttackSpeedOnCritIcon.tif").WaitForCompletion(),
                 SoulboundAssets.soulBoundColor, true, false, false);
-
-            interrogatorGuiltyDebuff = Modules.Content.CreateAndAddBuff("SoulboundGuiltyDebuff", assetBundle.LoadAsset<Sprite>("texGuiltyDebuff"),
-                SoulboundAssets.soulBoundColor, false, true, false);
-
-            interrogatorPressuredBuff = Modules.Content.CreateAndAddBuff("SoulboundPressuredDebuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
-                SoulboundAssets.soulBoundColor, false, false, false);
-            
-            interrogatorConvictBuff = Modules.Content.CreateAndAddBuff("SoulboundConvictBuff", assetBundle.LoadAsset<Sprite>("texConvictBuff"), 
+            soulStacksBuff = Modules.Content.CreateAndAddBuff("SoulStacksBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/AttackSpeedOnCrit/texBuffAttackSpeedOnCritIcon.tif").WaitForCompletion(),
                 SoulboundAssets.soulBoundColor, true, false, false);
         }
     }

@@ -10,6 +10,9 @@ using R2API;
 using UnityEngine.Rendering.PostProcessing;
 using ThreeEyedGames;
 using SoulboundMod.Soulbound.Components;
+using System.Reflection;
+using System;
+using UnityEngine.Diagnostics;
 
 namespace SoulboundMod.Soulbound.Content
 {
@@ -34,21 +37,29 @@ namespace SoulboundMod.Soulbound.Content
         internal static GameObject bloodSpurtEffect;
 
         internal static GameObject batHitEffectRed;
-
+        internal static GameObject soulboundHitEffect;
         internal static GameObject dashEffect;
+        internal static GameObject spiritBiteEffect;
 
+        internal static GameObject chargeEffect;
+        internal static GameObject fullChargeEffect;
+        internal static GameObject arrowMuzzleFlashEffect;
 
         //Models
 
         //Projectiles
         internal static GameObject arrowPrefab;
+        internal static GameObject arrowGhostPrefab;
+
+        internal static GameObject chargedArrowPrefab;
+        internal static GameObject chargedArrowGhostPrefab;
         //Sounds
-        internal static NetworkSoundEventDef batImpactSoundEvent;
+        internal static NetworkSoundEventDef biteImpactSoundEvent;
         internal static NetworkSoundEventDef swordImpactSoundEvent;
 
         //Colors
-        internal static Color soulBoundColor = new Color(255f / 255f, 191f / 255f, 102f / 255f);
-        internal static Color soulBoundSecondaryColor = new Color(70f / 255f, 63f / 255f, 94f / 255f);
+        internal static Color soulBoundColor = new Color(166f / 255f, 138f / 255f, 242f / 255f);
+        internal static Color soulBoundSecondaryColor = new Color(231f / 255f, 222f / 255f, 255f / 255f);
 
         //Crosshair
         public static void Init(AssetBundle assetBundle)
@@ -76,23 +87,23 @@ namespace SoulboundMod.Soulbound.Content
                 {
                     CleanChildren(startingTrans.GetChild(num));
                 }
-                Object.DestroyImmediate(startingTrans.GetChild(num).gameObject);
+                UnityEngine.Object.DestroyImmediate(startingTrans.GetChild(num).gameObject);
             }
         }
 
         private static void CreateMaterials()
         {
-            fireMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
+            fireMat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
             fireMat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
 
-            fireMatInFront = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
+            fireMatInFront = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/GreaterWisp/matGreaterWispFire.mat").WaitForCompletion());
             fireMatInFront.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             fireMatInFront.SetFloat("_DepthOffset", -10f);
 
-            spiritBodyMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperDiffuse.mat").WaitForCompletion());
+            spiritBodyMat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperDiffuse.mat").WaitForCompletion());
             spiritBodyMat.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texSpiritDiffuse"));
 
-            spiritFurMat = Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperFurDiffuse.mat").WaitForCompletion());
+            spiritFurMat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Gravekeeper/matGravekeeperFurDiffuse.mat").WaitForCompletion());
             spiritFurMat.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texSpiritFurDiffuse"));
         }
 
@@ -125,9 +136,9 @@ namespace SoulboundMod.Soulbound.Content
 
             dashEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherDashEffect.prefab").WaitForCompletion().InstantiateClone("SoulboundDashEffect");
             dashEffect.AddComponent<NetworkIdentity>();
-            Object.Destroy(dashEffect.transform.Find("Point light").gameObject);
-            Object.Destroy(dashEffect.transform.Find("Flash, White").gameObject);
-            Object.Destroy(dashEffect.transform.Find("NoiseTrails").gameObject);
+            UnityEngine.Object.Destroy(dashEffect.transform.Find("Point light").gameObject);
+            UnityEngine.Object.Destroy(dashEffect.transform.Find("Flash, White").gameObject);
+            UnityEngine.Object.Destroy(dashEffect.transform.Find("NoiseTrails").gameObject);
             dashEffect.transform.Find("Donut").localScale *= 0.5f;
             dashEffect.transform.Find("Donut, Distortion").localScale *= 0.5f;
             dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampDefault.png").WaitForCompletion());
@@ -155,6 +166,55 @@ namespace SoulboundMod.Soulbound.Content
             bloodSplatterEffect.transform.GetChild(15).gameObject.SetActive(false);
             bloodSplatterEffect.transform.localScale = Vector3.one;
             SoulboundMod.Modules.Content.CreateAndAddEffectDef(bloodSplatterEffect);
+
+            soulboundHitEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Merc/OmniImpactVFXSlashMerc.prefab").WaitForCompletion().InstantiateClone("SoulboundImpact", false);
+            if(!soulboundHitEffect.GetComponent<NetworkIdentity>()) soulboundHitEffect.AddComponent<NetworkIdentity>();
+            soulboundHitEffect.GetComponent<OmniEffect>().enabled = false;
+            soulboundHitEffect.GetComponent<EffectComponent>().soundName = "Play_acrid_m2_bite_hit";
+            Material material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Merc/matOmniHitspark3Merc.mat").WaitForCompletion());
+            material.SetColor("_TintColor", Color.red);
+            soulboundHitEffect.transform.GetChild(1).gameObject.GetComponent<ParticleSystemRenderer>().material = material;
+            soulboundHitEffect.transform.GetChild(2).localScale = Vector3.one * 1.5f;
+            soulboundHitEffect.transform.GetChild(2).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/VoidSurvivor/matVoidSurvivorBlasterFireCorrupted.mat").WaitForCompletion());
+            material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpSlashImpact.mat").WaitForCompletion());
+            soulboundHitEffect.transform.GetChild(5).gameObject.GetComponent<ParticleSystemRenderer>().material = material;
+            soulboundHitEffect.transform.GetChild(4).localScale = Vector3.one * 3f;
+            soulboundHitEffect.transform.GetChild(4).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpDust.mat").WaitForCompletion());
+            soulboundHitEffect.transform.GetChild(6).GetChild(0).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark1Void.mat").WaitForCompletion());
+            soulboundHitEffect.transform.GetChild(6).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark2Void.mat").WaitForCompletion());
+            soulboundHitEffect.transform.GetChild(1).localScale = Vector3.one * 1.5f;
+            soulboundHitEffect.transform.GetChild(1).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(2).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(3).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(4).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(5).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(6).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(6).GetChild(0).gameObject.SetActive(true);
+            soulboundHitEffect.transform.GetChild(6).transform.localScale = new Vector3(1f, 1f, 3f);
+            soulboundHitEffect.transform.localScale = Vector3.one * 1.5f;
+            Modules.Content.CreateAndAddEffectDef(soulboundHitEffect);
+
+            spiritBiteEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Vermin/VerminBiteEffect.prefab").WaitForCompletion().InstantiateClone("SoulboundBiteEffect", true);
+            if (!spiritBiteEffect.GetComponent<NetworkIdentity>()) spiritBiteEffect.AddComponent<NetworkIdentity>();
+            spiritBiteEffect.transform.Find("SwingTrail").gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png").WaitForCompletion());
+            spiritBiteEffect.transform.Find("Goo").gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png").WaitForCompletion());
+            spiritBiteEffect.transform.Find("Point Light").gameObject.GetComponent<Light>().color = soulBoundColor;
+
+            chargeEffect = mainAssetBundle.LoadAsset<GameObject>("ChargingEffect");
+            var objectScaleCurve = chargeEffect.AddComponent<ObjectScaleCurve>();
+            objectScaleCurve.overallCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            objectScaleCurve.useOverallCurveOnly = true;
+            objectScaleCurve.timeMax = 3f;
+            fullChargeEffect = mainAssetBundle.LoadAsset<GameObject>("ChargeFullEffect");
+
+            arrowMuzzleFlashEffect = mainAssetBundle.LoadAsset<GameObject>("ChargeMuzzleFlash");
+            var effectComponent = arrowMuzzleFlashEffect.AddComponent<EffectComponent>();
+            effectComponent.soundName = "Play_mage_m1_shoot";
+            effectComponent.positionAtReferencedTransform = true;
+            effectComponent.parentToReferencedTransform = true;
+            arrowMuzzleFlashEffect.AddComponent<DestroyOnTimer>().duration = 1f;
+
+            Modules.Content.CreateAndAddEffectDef(arrowMuzzleFlashEffect);
         }
 
         #endregion
@@ -162,47 +222,56 @@ namespace SoulboundMod.Soulbound.Content
         #region projectiles
         private static void CreateProjectiles()
         {
-            arrowPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bandit2/Bandit2ShivProjectile.prefab").WaitForCompletion().InstantiateClone("SoulboundCleaver");
-            arrowPrefab.AddComponent<NetworkIdentity>();
-            arrowPrefab.GetComponent<ProjectileSingleTargetImpact>().hitSoundString = "sfx_scout_cleaver_miss";
-            arrowPrefab.GetComponent<ProjectileSingleTargetImpact>().enemyHitSoundString = "sfx_scout_cleaver_hit";
-            arrowPrefab.GetComponent<SphereCollider>().radius = 0.5f;
+            arrowGhostPrefab = mainAssetBundle.CreateProjectileGhostPrefab("ArrowGhost");
 
-            arrowPrefab.GetComponent<ProjectileController>().allowPrediction = true;
-
-            arrowPrefab.GetComponent<ProjectileDamage>().damageType = DamageType.BonusToLowHealth;
-            DamageAPI.ModdedDamageTypeHolderComponent moddedDamage = arrowPrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
-            moddedDamage.Add(DamageTypes.SoulboundStack);
-
-            arrowPrefab.GetComponent<ProjectileController>().ghostPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bandit2/Bandit2ShivGhostAlt.prefab").WaitForCompletion().InstantiateClone("SoulboundCleaverGhost");
-            arrowPrefab.GetComponent<ProjectileController>().ghostPrefab.AddComponent<NetworkIdentity>();
-            arrowPrefab.GetComponent<ProjectileSimple>().desiredForwardSpeed = 120f;
-            TrailRenderer trail = arrowPrefab.AddComponent<TrailRenderer>();
-            trail.startWidth = 0.5f;
-            trail.endWidth = 0.1f;
-            trail.time = 0.5f;
-            trail.emitting = true;
-            trail.numCornerVertices = 0;
-            trail.numCapVertices = 0;
-            trail.material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matSmokeTrail.mat").WaitForCompletion();
-            trail.startColor = Color.white;
-            trail.endColor = Color.gray;
-            trail.alignment = LineAlignment.TransformZ;
-
-            //arrowPrefab.GetComponent<ProjectileController>().ghostPrefab.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh = mainAssetBundle.LoadAsset<GameObject>("interrogatorCleaver").GetComponent<MeshFilter>().mesh;
-            //arrowPrefab.GetComponent<ProjectileController>().ghostPrefab.transform.GetChild(0).localRotation = new Quaternion(90f, 0f, 90f, Quaternion.identity.w);
-            //arrowPrefab.GetComponent<ProjectileController>().ghostPrefab.transform.GetChild(0).localScale = Vector3.one * 0.015f;
-            //arrowPrefab.GetComponent<ProjectileController>().ghostPrefab.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = batMat;
-
+            arrowPrefab = mainAssetBundle.LoadAsset<GameObject>("ArrowProjectile").InstantiateClone("SoulboundArrowProjectile");
+            if (!arrowPrefab.GetComponent<NetworkIdentity>()) arrowPrefab.AddComponent<NetworkIdentity>();
+            var projectileController = arrowPrefab.AddComponent<ProjectileController>();
+            projectileController.allowPrediction = true;
+            projectileController.ghostPrefab = arrowGhostPrefab;
+            arrowPrefab.AddComponent<ProjectileNetworkTransform>();
+            var projectileSimple = arrowPrefab.AddComponent<ProjectileSimple>();
+            projectileSimple.desiredForwardSpeed = 120f;
+            projectileSimple.lifetime = 10f;
+            var projectileDamage = arrowPrefab.AddComponent<ProjectileDamage>();
+            var projectileSingleTargetImpact = arrowPrefab.AddComponent<ProjectileSingleTargetImpact>();
+            projectileSingleTargetImpact.destroyOnWorld = true;
+            projectileSingleTargetImpact.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/OmniImpactVFXHuntress.prefab").WaitForCompletion();
+            projectileSingleTargetImpact.hitSoundString = "Play_MULT_m1_smg_impact";
+            arrowPrefab.AddComponent<AlignArrowComponent>();
 
             Modules.Content.AddProjectilePrefab(arrowPrefab);
+
+
+            chargedArrowGhostPrefab = mainAssetBundle.CreateProjectileGhostPrefab("ArrowChargedGhost");
+
+            chargedArrowPrefab = mainAssetBundle.LoadAsset<GameObject>("ArrowProjectile").InstantiateClone("SoulboundChargedArrowProjectile");
+            if (!chargedArrowPrefab.GetComponent<NetworkIdentity>()) chargedArrowPrefab.AddComponent<NetworkIdentity>();
+            var projectileController2 = chargedArrowPrefab.AddComponent<ProjectileController>();
+            projectileController2.allowPrediction = true;
+            projectileController2.ghostPrefab = chargedArrowGhostPrefab;
+            chargedArrowPrefab.AddComponent<ProjectileNetworkTransform>();
+            var projectileSimple2 = chargedArrowPrefab.AddComponent<ProjectileSimple>();
+            projectileSimple2.desiredForwardSpeed = 120f;
+            projectileSimple2.lifetime = 10f;
+            var projectileDamage2 = chargedArrowPrefab.AddComponent<ProjectileDamage>();
+            projectileDamage2.damageType = DamageType.Generic;
+            var projectileSingleTargetImpact2 = chargedArrowPrefab.AddComponent<ProjectileSingleTargetImpact>();
+            projectileSingleTargetImpact2.destroyOnWorld = true;
+            projectileSingleTargetImpact2.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/OmniImpactVFXHuntress.prefab").WaitForCompletion();
+            projectileSingleTargetImpact2.hitSoundString = "Play_MULT_m1_smg_impact";
+            chargedArrowPrefab.AddComponent<AlignArrowComponent>();
+            chargedArrowPrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
+            chargedArrowPrefab.GetComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.MountingDread);
+
+            Modules.Content.AddProjectilePrefab(chargedArrowPrefab);
         }
         #endregion
 
         #region sounds
         private static void CreateSounds()
         {
-            batImpactSoundEvent = Modules.Content.CreateAndAddNetworkSoundEventDef("sfx_interrogator_self_damage");
+            biteImpactSoundEvent = Modules.Content.CreateAndAddNetworkSoundEventDef("Play_acrid_m2_bite_hit");
             swordImpactSoundEvent = Modules.Content.CreateAndAddNetworkSoundEventDef("Play_merc_sword_impact");
         }
         #endregion
@@ -296,6 +365,95 @@ namespace SoulboundMod.Soulbound.Content
         {
             return CreateMaterial(materialName, emission, emissionColor, 0f);
         }
+
+        public static GameObject CreateBlankPrefab(string name = "GameObject", bool network = false)
+        {
+            GameObject gameObject = new GameObject(name).InstantiateClone(name, registerNetwork: false);
+            if (network)
+            {
+                gameObject.AddComponent<NetworkIdentity>();
+                gameObject.RegisterNetworkPrefab();
+            }
+
+            return gameObject;
+        }
+
+        public static void CopyChildren(GameObject from, GameObject to, bool cloneFromThenDestroy = true)
+        {
+            string name = to.name;
+            if (cloneFromThenDestroy)
+            {
+                from = from.InstantiateClone(from.name + "Copy", registerNetwork: false);
+            }
+
+            Transform parent = to.transform.parent;
+            int childCount = from.transform.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                from.transform.GetChild(0).SetParent(to.transform, worldPositionStays: false);
+            }
+
+            Component[] components = from.GetComponents<Component>();
+            foreach (Component component in components)
+            {
+                Type type = component.GetType();
+                Component component2 = to.GetComponent(type);
+                if (type != typeof(Transform) && (Attribute.GetCustomAttribute(type, typeof(DisallowMultipleComponent)) == null || !component2))
+                {
+                    component2 = to.AddComponent(type);
+                }
+
+                bool flag = typeof(Animator).IsAssignableFrom(component.GetType());
+                bool logWarnings = false;
+                if (flag)
+                {
+                    Animator animator = (Animator)component;
+                    Animator animator2 = (Animator)component2;
+                    logWarnings = animator.logWarnings;
+                    animator.logWarnings = false;
+                    animator2.logWarnings = false;
+                }
+
+                BindingFlags bindingAttr = BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+                PropertyInfo[] properties = type.GetProperties(bindingAttr);
+                foreach (PropertyInfo propertyInfo in properties)
+                {
+                    if (propertyInfo.CanWrite)
+                    {
+                        try
+                        {
+                            propertyInfo.SetValue(component2, propertyInfo.GetValue(component));
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+
+                FieldInfo[] fields = type.GetFields(bindingAttr);
+                foreach (FieldInfo fieldInfo in fields)
+                {
+                    fieldInfo.SetValue(component2, fieldInfo.GetValue(component));
+                }
+
+                if (flag)
+                {
+                    Animator animator3 = (Animator)component;
+                    Animator animator4 = (Animator)component2;
+                    animator3.logWarnings = logWarnings;
+                    animator4.logWarnings = logWarnings;
+                }
+            }
+
+            to.transform.SetParent(parent);
+            to.name = name;
+            to.layer = from.layer;
+            if (cloneFromThenDestroy)
+            {
+                UnityEngine.Object.Destroy(from);
+            }
+        }
+
         #endregion
     }
 }

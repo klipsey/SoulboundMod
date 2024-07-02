@@ -49,7 +49,7 @@ namespace SoulboundMod.Soulbound
             bodyColor = SoulboundAssets.soulBoundColor,
             sortPosition = 6f,
 
-            crosshair = Modules.Assets.LoadCrosshair("Standard"),
+            crosshair = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/StandardCrosshair.prefab").WaitForCompletion(),
             podPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"),
 
             maxHealth = 110f,
@@ -123,8 +123,6 @@ namespace SoulboundMod.Soulbound
 
             CameraParams.InitializeParams();
 
-            ChildLocator childLocator = bodyPrefab.GetComponentInChildren<ChildLocator>();
-
             DamageTypes.Init();
 
             SoulboundStates.Init();
@@ -150,7 +148,7 @@ namespace SoulboundMod.Soulbound
         {
             AddHitboxes();
             bodyPrefab.AddComponent<SoulboundController>();
-            bodyPrefab.AddComponent<SoulboundTracker>();
+            bodyPrefab.AddComponent<SpiritMasterComponent>();
         }
         public void AddHitboxes()
         {
@@ -193,7 +191,7 @@ namespace SoulboundMod.Soulbound
 
             skillLocator.passiveSkill.enabled = false;
 
-            passive.interrogatorPassive = Skills.CreateSkillDef(new SkillDefInfo
+            passive.soulboundPassive = Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = SOULBOUND_PREFIX + "PASSIVE_NAME",
                 skillNameToken = SOULBOUND_PREFIX + "PASSIVE_NAME",
@@ -218,29 +216,29 @@ namespace SoulboundMod.Soulbound
                 stockToConsume = 1
             });
 
-            Skills.AddPassiveSkills(passive.passiveSkillSlot.skillFamily, passive.interrogatorPassive);
+            Skills.AddPassiveSkills(passive.passiveSkillSlot.skillFamily, passive.soulboundPassive);
         }
 
         private void AddPrimarySkills()
         {
             SkillDef bow = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "Affray",
-                skillNameToken = SOULBOUND_PREFIX + "SECONDARY_AFFRAY_NAME",
-                skillDescriptionToken = SOULBOUND_PREFIX + "SECONDARY_AFFRAY_DESCRIPTION",
-                keywordTokens = new string[] { Tokens.interrogatorPressuredKeyword, Tokens.slayerKeyword },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texSoulboundCleaverIcon"),
+                skillName = "Bow",
+                skillNameToken = SOULBOUND_PREFIX + "PRIMARY_BOW_NAME",
+                skillDescriptionToken = SOULBOUND_PREFIX + "PRIMARY_BOW_DESCRIPTION",
+                keywordTokens = new string[] { Tokens.agileKeyword },
+                skillIcon = assetBundle.LoadAsset<Sprite>("tex"),
 
-                activationState = new SerializableEntityStateType(typeof(MainState)),
+                activationState = new SerializableEntityStateType(typeof(ChargeArrow)),
 
-                activationStateMachineName = "Weapon2",
-                interruptPriority = InterruptPriority.Skill,
+                activationStateMachineName = "Weapon",
+                interruptPriority = InterruptPriority.Any,
 
                 baseMaxStock = 1,
-                baseRechargeInterval = 5f,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
+                baseRechargeInterval = 1f,
+                rechargeStock = 0,
+                requiredStock = 0,
+                stockToConsume = 0,
 
                 resetCooldownTimerOnUse = false,
                 fullRestockOnAssign = true,
@@ -253,6 +251,7 @@ namespace SoulboundMod.Soulbound
                 cancelSprintingOnActivation = false,
                 forceSprintDuringState = false,
             });
+
             Skills.AddPrimarySkills(bodyPrefab, bow);
         }
 
@@ -260,13 +259,13 @@ namespace SoulboundMod.Soulbound
         {
             SkillDef hop = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "Affray",
-                skillNameToken = SOULBOUND_PREFIX + "SECONDARY_AFFRAY_NAME",
-                skillDescriptionToken = SOULBOUND_PREFIX + "SECONDARY_AFFRAY_DESCRIPTION",
-                keywordTokens = new string[] { Tokens.interrogatorPressuredKeyword, Tokens.slayerKeyword },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texSoulboundCleaverIcon"),
+                skillName = "Hop",
+                skillNameToken = SOULBOUND_PREFIX + "SECONDARY_HOP_NAME",
+                skillDescriptionToken = SOULBOUND_PREFIX + "SECONDARY_HOP_DESCRIPTION",
+                keywordTokens = new string[] { },
+                skillIcon = assetBundle.LoadAsset<Sprite>("tex"),
 
-                activationState = new SerializableEntityStateType(typeof(MainState)),
+                activationState = new SerializableEntityStateType(typeof(HopFire)),
 
                 activationStateMachineName = "Weapon2",
                 interruptPriority = InterruptPriority.Skill,
@@ -286,7 +285,7 @@ namespace SoulboundMod.Soulbound
                 isCombatSkill = true,
                 canceledFromSprinting = false,
                 cancelSprintingOnActivation = false,
-                forceSprintDuringState = false,
+                forceSprintDuringState = true,
             });
 
             Skills.AddSecondarySkills(bodyPrefab, hop);
@@ -296,15 +295,15 @@ namespace SoulboundMod.Soulbound
         {
             SkillDef dashToSpirit = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "Falsify",
-                skillNameToken = SOULBOUND_PREFIX + "UTILITY_FALSIFY_NAME",
-                skillDescriptionToken = SOULBOUND_PREFIX + "UTILITY_FALSIFY_DESCRIPTION",
+                skillName = "Spirit Swap",
+                skillNameToken = SOULBOUND_PREFIX + "UTILITY_SWAP_NAME",
+                skillDescriptionToken = SOULBOUND_PREFIX + "UTILITY_SWAP_DESCRIPTION",
                 keywordTokens = new string[] { },
                 skillIcon = assetBundle.LoadAsset<Sprite>("texFalsifyIcon"),
 
-                activationState = new SerializableEntityStateType(typeof(MainState)),
-                activationStateMachineName = "Weapon2",
-                interruptPriority = InterruptPriority.Skill,
+                activationState = new SerializableEntityStateType(typeof(SwapWithSpirit)),
+                activationStateMachineName = "Dash",
+                interruptPriority = InterruptPriority.PrioritySkill,
 
                 baseRechargeInterval = 6f,
                 baseMaxStock = 1,
@@ -331,19 +330,19 @@ namespace SoulboundMod.Soulbound
 
         private void AddSpecialSkills()
         {
-            SkillDef convict = Skills.CreateSkillDef<SoulboundSkillDef>(new SkillDefInfo
+            SkillDef redirectSpirit = Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = "Convict",
-                skillNameToken = SOULBOUND_PREFIX + "SPECIAL_CONVICT_NAME",
-                skillDescriptionToken = SOULBOUND_PREFIX + "SPECIAL_CONVICT_DESCRIPTION",
+                skillName = "Redirect",
+                skillNameToken = SOULBOUND_PREFIX + "SPECIAL_REDIRECT_NAME",
+                skillDescriptionToken = SOULBOUND_PREFIX + "SPECIAL_REDIRECT_DESCRIPTION",
                 keywordTokens = new string[] { },
                 skillIcon = assetBundle.LoadAsset<Sprite>("texConvictIcon"),
 
-                activationState = new EntityStates.SerializableEntityStateType(typeof(MainState)),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(RedirectSpirit)),
                 activationStateMachineName = "Weapon2",
                 interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
 
-                baseRechargeInterval = 16f,
+                baseRechargeInterval = 10f,
                 baseMaxStock = 1,
 
                 rechargeStock = 1,
@@ -362,43 +361,7 @@ namespace SoulboundMod.Soulbound
                 forceSprintDuringState = false,
             });
 
-            Skills.AddSpecialSkills(bodyPrefab, convict);
-        }
-
-        private void InitializeScepter()
-        {
-            convictScepterSkillDef = Skills.CreateSkillDef<SoulboundSkillDef>(new SkillDefInfo
-            {
-                skillName = "Convict Scepter",
-                skillNameToken = SOULBOUND_PREFIX + "SPECIAL_SCEPTER_CONVICT_NAME",
-                skillDescriptionToken = SOULBOUND_PREFIX + "SPECIAL_SCEPTER_CONVICT_DESCRIPTION",
-                keywordTokens = new string[] { },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texConvictScepter"),
-
-                activationState = new EntityStates.SerializableEntityStateType(typeof(MainState)),
-                activationStateMachineName = "Weapon2",
-                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
-
-                baseRechargeInterval = 16f,
-                baseMaxStock = 1,
-
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-
-                resetCooldownTimerOnUse = false,
-                fullRestockOnAssign = true,
-                dontAllowPastMaxStocks = false,
-                mustKeyPress = true,
-                beginSkillCooldownOnSkillEnd = false,
-
-                isCombatSkill = true,
-                canceledFromSprinting = false,
-                cancelSprintingOnActivation = false,
-                forceSprintDuringState = false,
-            });
-
-            AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(convictScepterSkillDef, bodyName, SkillSlot.Special, 0);
+            Skills.AddSpecialSkills(bodyPrefab, redirectSpirit);
         }
         #endregion skills
 

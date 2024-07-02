@@ -54,6 +54,7 @@ namespace SoulboundMod.Modules
 
             for (int i = 0; i < itemRuleGroups.Length; i++)
             {
+                Log.Warning("HIIHIHHIH" + i);
                 ItemDisplayRule[] rules = itemRuleGroups[i].displayRuleGroup.rules;
 
                 KeyAssetDisplayPrefabs[itemRuleGroups[i].keyAsset] = rules;
