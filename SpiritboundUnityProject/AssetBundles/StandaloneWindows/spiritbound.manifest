@@ -1,0 +1,159 @@
+ManifestFileVersion: 0
+CRC: 2135075897
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5d3648652158ecac6932b45c0973e310
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f16c82b54d99b94b5175d199eeaa2843
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 96
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 67079b849227b734694872d8810229b8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2334069450a65d042a95a873e5229b20, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fef0780b96a0f12448b6dd86f9c8139b, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+- Class: 319
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Spiritbound/Animations/animSpiritboundCSS.controller
+- Assets/Spiritbound/VFX/CritLightningMonsoon.prefab
+- Assets/Spiritbound/Projectiles/matCircleParticle.mat
+- Assets/Spiritbound/Textures/texGuilty.png
+- Assets/Spiritbound/VFX/BloodSpurtEffect.prefab
+- Assets/Spiritbound/mdlSpiritbound.prefab
+- Assets/Spiritbound/HUD/ChargeBar.prefab
+- Assets/Spiritbound/Materials/matFire.mat
+- Assets/Spiritbound/Projectiles/Torus.002.mesh
+- Assets/Spiritbound/Textures/BowE.png
+- Assets/Spiritbound/Projectiles/texSplat.png
+- Assets/Spiritbound/Textures/LambD.png
+- Assets/Spiritbound/VFX/CritLightning.prefab
+- Assets/Spiritbound/Projectiles/ChargeMuzzleFlash.prefab
+- Assets/Spiritbound/Textures/texLambHorns.png
+- Assets/Spiritbound/VFX/matShockwave.mat
+- Assets/Spiritbound/Meshes/meshTrinket.mesh
+- Assets/Spiritbound/VFX/Badass/BigExplosion.prefab
+- Assets/Spiritbound/Projectiles/matArrowChargedTrail.mat
+- Assets/Spiritbound/VFX/Badass/MetalHitEffect.prefab
+- Assets/Spiritbound/Projectiles/matChargeParticle.mat
+- Assets/Spiritbound/HUD/Textures/texBulletIndicator.png
+- Assets/Spiritbound/VFX/matShockwave2.mat
+- Assets/Spiritbound/VFX/Badass/StoneHitEffect.prefab
+- Assets/Spiritbound/Animations/maskSpiritboundAim.mask
+- Assets/Spiritbound/Textures/texGuiltyBuff.png
+- Assets/Spiritbound/Projectiles/ChargingEffect.prefab
+- Assets/Spiritbound/Textures/texSpiritDiffuse.png
+- Assets/Spiritbound/Textures/BowD.png
+- Assets/Spiritbound/Textures/HairD.png
+- Assets/Spiritbound/Animations/animSpiritbound.controller
+- Assets/Spiritbound/Textures/texRampConvicted.png
+- Assets/Spiritbound/Textures/texCloudPixel2.png
+- Assets/Spiritbound/Textures/texSpiritFurDiffuse.png
+- Assets/Spiritbound/VFX/texShockwave.png
+- Assets/Spiritbound/Meshes/meshHair.mesh
+- Assets/Spiritbound/AnimationsSpirit/animSpirit.controller
+- Assets/Spiritbound/Meshes/meshSpiritMask.mesh
+- Assets/Spiritbound/Meshes/meshFur.mesh
+- Assets/Spiritbound/Materials/matHair.mat
+- Assets/Spiritbound/Projectiles/ChargeFullEffect.prefab
+- Assets/Spiritbound/Projectiles/mdlImpPlaneSpike.fbx
+- Assets/Spiritbound/Materials/matHorn.mat
+- Assets/Spiritbound/Materials/matBow.mat
+- Assets/Spiritbound/Meshes/meshBody.mesh
+- Assets/Spiritbound/HUD/WeaponChargeBar.prefab
+- Assets/Spiritbound/Projectiles/matArrowCharged.mat
+- Assets/Spiritbound/AnimationsSpirit/maskSpiritAim.mask
+- Assets/Spiritbound/Meshes/meshBow.mesh
+- Assets/Spiritbound/Meshes/meshSpiritBody.mesh
+- Assets/Spiritbound/VFX/texSpyStreak.png
+- Assets/Spiritbound/Textures/texConvictBuff.png
+- Assets/Spiritbound/mdlSpirit.prefab
+- Assets/Spiritbound/VFX/matSpyDefault.mat
+- Assets/Spiritbound/Projectiles/texCircleOutline.png
+- Assets/Spiritbound/Icons/texDefaultSkin.png
+- Assets/Spiritbound/Meshes/meshLambMask.mesh
+- Assets/Spiritbound/VFX/Badass/TinyExplosion.prefab
+- Assets/Spiritbound/VFX/Badass/SandHitEffect.prefab
+- Assets/Spiritbound/HUD/ChargeRing.prefab
+- Assets/Spiritbound/VFX/texBlackLightning.png
+- Assets/Spiritbound/Meshes/meshHorns.mesh
+- Assets/Spiritbound/Meshes/meshPack.mesh
+- Assets/Spiritbound/Animations/maskSpiritboundLeftArm.mask
+- Assets/Spiritbound/Projectiles/matArrowTrail.mat
+- Assets/Spiritbound/HUD/Textures/texChargeRing.png
+- Assets/Spiritbound/VFX/matSpyStreak.mat
+- Assets/Spiritbound/Projectiles/ArrowGhost.prefab
+- Assets/Spiritbound/Projectiles/ArrowProjectile.prefab
+- Assets/Spiritbound/Projectiles/ArrowChargedGhost.prefab
+- Assets/Spiritbound/Materials/matBody.mat
+- Assets/Spiritbound/spiritbound_emoteskeleton.prefab
+- Assets/Spiritbound/AnimationsSpirit/maskSpiritGesture.mask
+- Assets/Spiritbound/Projectiles/matArrow.mat
+- Assets/Spiritbound/Projectiles/Cube.mesh
+- Assets/Spiritbound/Icons/texInterrogatorIcon.png
+- Assets/Spiritbound/SpiritboundDisplay.prefab
+- Assets/Spiritbound/Textures/texGlowPaintMask.png
+- Assets/Spiritbound/VFX/Badass/WoodHitEffect.prefab
+- Assets/Spiritbound/VFX/Badass/SmallExplosion.prefab
+- Assets/Spiritbound/Projectiles/mdlWaterBombRing.fbx
+- Assets/Spiritbound/Animations/animSpiritboundEmotes.controller
+- Assets/Spiritbound/HUD/Textures/texSniperBulletIndicator.png
+- Assets/Spiritbound/Icons/texMonsoonSkin.png
+- Assets/Spiritbound/Animations/maskSpiritboundImpact.mask
+- Assets/Spiritbound/Textures/texGuiltyDebuff.png
+- Assets/Spiritbound/VFX/matBlackLightning.mat
+- Assets/Spiritbound/Projectiles/matFullChargeParticle.mat
+- Assets/Spiritbound/Animations/maskSpiritboundGesture.mask
+- Assets/Spiritbound/Textures/texCloudDifferenceBW2.png
+- Assets/Spiritbound/HUD/Textures/texWhite.png
+Dependencies: []
