@@ -34,16 +34,16 @@ namespace SpiritboundMod.Spiritbound.Components
             {
                 if (this.target.healthComponent)
                 {
-                    this.target.healthComponent.Heal((1 - this.target.healthComponent.health / this.target.healthComponent.fullHealth) * (this.target.healthComponent.fullHealth * 0.5f), default(ProcChainMask));
+                    this.target.healthComponent.Heal((1 - this.target.healthComponent.health / this.target.healthComponent.fullHealth) * (this.target.healthComponent.fullHealth * SpiritboundStaticValues.healCoefficient + (this.target.healthComponent.body.GetBuffCount(SpiritboundBuffs.soulStacksBuff) * SpiritboundStaticValues.healStacking)), default(ProcChainMask));
 
-                    if(NetworkServer.active)
+                    if (NetworkServer.active)
                     {
                         int num = 5;
                         float num2 = 2f;
-                        this.target.healthComponent.body.ClearTimedBuffs(SpiritboundBuffs.movespeedHealStacksBuff);
+                        this.target.healthComponent.body.ClearTimedBuffs(SpiritboundBuffs.spiritMovespeedStacksBuff);
                         for (int i = 0; i < num; i++)
                         {
-                            this.target.healthComponent.body.AddTimedBuff(SpiritboundBuffs.movespeedHealStacksBuff, num2 * (i + 1) / num);
+                            this.target.healthComponent.body.AddTimedBuff(SpiritboundBuffs.spiritMovespeedStacksBuff, num2 * (i + 1) / num);
                         }
                     }
 

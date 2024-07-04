@@ -19,8 +19,7 @@ namespace SpiritboundMod.Spiritbound.Components
         private CharacterModel characterModel;
         private Animator animator;
         private SkillLocator skillLocator;
-        private Material[] swordMat;
-        private Material[] batMat;
+        private SpiritMasterComponent spiritMasterComponent;
         public string currentSkinNameToken => this.skinController.skins[this.skinController.currentSkinIndex].nameToken;
         public string altSkinNameToken => SpiritboundSurvivor.SOULBOUND_PREFIX + "MASTERY_SKIN_NAME";
 
@@ -30,7 +29,7 @@ namespace SpiritboundMod.Spiritbound.Components
 
         public static float maxHealGain = 100f;
 
-        public float healAmount;
+        public float healCounter;
 
         private float healStopwatchInterval;
 
@@ -46,7 +45,7 @@ namespace SpiritboundMod.Spiritbound.Components
             this.characterModel = modelLocator.modelBaseTransform.GetComponentInChildren<CharacterModel>();
             this.skillLocator = this.GetComponent<SkillLocator>();
             this.skinController = modelLocator.modelTransform.gameObject.GetComponent<ModelSkinController>();
-
+            this.spiritMasterComponent = this.GetComponent<SpiritMasterComponent>();
             this.Invoke("ApplySkin", 0.3f);
         }
         private void Start()
@@ -76,17 +75,28 @@ namespace SpiritboundMod.Spiritbound.Components
             if (healStopwatchInterval >= 0.25f && base.transform)
             {
                 healStopwatchInterval = 0f;
-                if (healAmount < 100f) healAmount += (base.transform.position - previousPosition).magnitude / 2f;
+                if (healCounter < 100f) healCounter += (base.transform.position - previousPosition).magnitude / 2f;
                 else
                 {
                     if (!characterBody.HasBuff(SpiritboundBuffs.spiritHealBuff))
                     {
                         if (NetworkServer.active) characterBody.SetBuffCount(SpiritboundBuffs.spiritHealBuff.buffIndex, 1);
                     }
-                    healAmount = 100f;
+                    healCounter = 100f;
                 }
                 previousPosition = base.transform.position;
                 onHealGained?.Invoke();
+            }
+
+            if(spiritMasterComponent && spiritMasterComponent.spiritController.gameObject)
+            {
+                if(spiritMasterComponent.spiritController.gameObject.GetComponent<CharacterBody>().HasBuff(RoR2Content.Buffs.WarCryBuff))
+                {
+                    if(this.skillLocator.secondary.rechargeStopwatch < this.skillLocator.utility.finalRechargeInterval * 0.6f && this.skillLocator.secondary.rechargeStopwatch > 0f)
+                    {
+                        this.skillLocator.secondary.rechargeStopwatch = this.skillLocator.utility.finalRechargeInterval * 0.6f;
+                    }
+                }
             }
         }
 

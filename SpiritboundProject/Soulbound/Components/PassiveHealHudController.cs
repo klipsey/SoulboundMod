@@ -39,10 +39,10 @@ namespace SpiritboundMod.Spiritbound.Components
         {
             if (targetText.token != string.Empty) { targetText.token = string.Empty; }
 
-            if (this.spiritBoundController && this.spiritBoundController.healAmount >= 0f)
+            if (this.spiritBoundController && this.spiritBoundController.healCounter >= 0f)
             {
                 float fill;
-                fill = Util.Remap(this.spiritBoundController.healAmount, 0f, 100f, 0f, 1f);
+                fill = Util.Remap(this.spiritBoundController.healCounter, 0f, 100f, 0f, 1f);
 
                 if (this.durationBarColor)
                 {

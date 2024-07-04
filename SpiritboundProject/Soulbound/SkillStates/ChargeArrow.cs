@@ -134,6 +134,11 @@ namespace SpiritboundMod.Spiritbound.SkillStates
             float angle2 = Mathf.Atan2(y, vector.magnitude) * 57.29578f * 1f;
 
             arrowChargedPrefab.GetComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.MountingDread);
+            if (base.characterBody.HasBuff(SpiritboundBuffs.spiritHealBuff))
+            {
+                arrowPrefab.GetComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.Heal);
+                arrowChargedPrefab.GetComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.Heal);
+            }
 
             var fireProjectileInfo = new FireProjectileInfo
             {

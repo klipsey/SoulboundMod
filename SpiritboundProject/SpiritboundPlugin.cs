@@ -42,6 +42,8 @@ namespace SpiritboundMod
             instance = this;
 
             NetworkingAPI.RegisterMessageType<Spiritbound.Components.SyncBloodExplosion>();
+            NetworkingAPI.RegisterMessageType<Spiritbound.Components.SyncStackOrb>();
+            NetworkingAPI.RegisterMessageType<Spiritbound.Components.SyncHealOrb>();
 
             //easy to use logger
             Log.Init(Logger);

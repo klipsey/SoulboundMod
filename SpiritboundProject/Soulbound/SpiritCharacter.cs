@@ -37,7 +37,7 @@ namespace SpiritboundMod.Spiritbound
             bodyNameToken = SPIRIT_PREFIX + "NAME",
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
             subtitleNameToken = SPIRIT_PREFIX + "SUBTITLE",
-            characterPortrait = assetBundle.LoadAsset<Texture>("texSpiritIcon"),
+            characterPortrait = assetBundle.LoadAsset<Texture>("texWolfIcon"),
             maxHealth = 100f,
             healthGrowth = 100f * 0.3f,
             healthRegen = 1f,
@@ -163,7 +163,7 @@ namespace SpiritboundMod.Spiritbound
             biteDriver.minTargetHealthFraction = float.NegativeInfinity;
             biteDriver.maxTargetHealthFraction = float.PositiveInfinity;
             biteDriver.minDistance = 0f;
-            biteDriver.maxDistance = 4f;
+            biteDriver.maxDistance = 5f;
             biteDriver.activationRequiresAimConfirmation = false;
             biteDriver.activationRequiresTargetLoS = false;
             biteDriver.selectionRequiresTargetLoS = true;
@@ -185,7 +185,7 @@ namespace SpiritboundMod.Spiritbound
             fireWisp.minTargetHealthFraction = float.NegativeInfinity;
             fireWisp.maxTargetHealthFraction = float.PositiveInfinity;
             fireWisp.minDistance = 0f;
-            fireWisp.maxDistance = 40f;
+            fireWisp.maxDistance = 20f;
             fireWisp.activationRequiresAimConfirmation = true;
             fireWisp.activationRequiresTargetLoS = true;
             fireWisp.selectionRequiresTargetLoS = true;
@@ -240,7 +240,7 @@ namespace SpiritboundMod.Spiritbound
             chaseNearDriver.moveInputScale = 1f;
             chaseNearDriver.ignoreNodeGraph = true;
             chaseNearDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            if (!attackDrivers.Contains(strafeDriver.customName)) attackDrivers.Add(strafeDriver.customName);
+            if (!attackDrivers.Contains(chaseNearDriver.customName)) attackDrivers.Add(chaseNearDriver.customName);
 
             AISkillDriver chaseFarDriver = masterPrefab.AddComponent<AISkillDriver>();
             chaseFarDriver.customName = "ChaseFromAfar";
@@ -296,7 +296,7 @@ namespace SpiritboundMod.Spiritbound
             hardLeash.selectionRequiresTargetLoS = false;
             hardLeash.maxTimesSelected = -1;
             hardLeash.maxDistance = float.PositiveInfinity;
-            hardLeash.minDistance = 10f;
+            hardLeash.minDistance = 120f;
             hardLeash.requireSkillReady = false;
             hardLeash.aimType = AISkillDriver.AimType.AtCurrentLeader;
             hardLeash.ignoreNodeGraph = false;
@@ -320,7 +320,7 @@ namespace SpiritboundMod.Spiritbound
             softLeash.selectionRequiresTargetLoS = false;
             softLeash.maxTimesSelected = -1;
             softLeash.maxDistance = float.PositiveInfinity;
-            softLeash.minDistance = 5f;
+            softLeash.minDistance = 10f;
             softLeash.requireSkillReady = false;
             softLeash.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             softLeash.ignoreNodeGraph = false;
@@ -344,7 +344,7 @@ namespace SpiritboundMod.Spiritbound
             idleNear.selectionRequiresTargetLoS = false;
             idleNear.maxTimesSelected = -1;
             idleNear.maxDistance = float.PositiveInfinity;
-            idleNear.minDistance = 2.5f;
+            idleNear.minDistance = 0f;
             idleNear.requireSkillReady = false;
             idleNear.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             idleNear.ignoreNodeGraph = false;
@@ -358,6 +358,7 @@ namespace SpiritboundMod.Spiritbound
             idleNear.minUserHealthFraction = float.NegativeInfinity;
             idleNear.maxUserHealthFraction = float.PositiveInfinity;
             idleNear.skillSlot = SkillSlot.None;
+
             #endregion
         }
         #region skills

@@ -1116,7 +1116,7 @@ namespace SpiritboundMod.Spiritbound.Content
                     "UpperArmL",
                     new Vector3(-0.029F, 0.011F, -0.01382F),
                     new Vector3(79.56982F, 276.2222F, 124.705F),
-                    new Vector3(0.69F, 0.69F, 0.69F)
+                    new Vector3(0F, 0F, 0F)
                     )
                 ));
             itemDisplayRules.Add(ItemDisplays.CreateDisplayRuleGroupWithRules(ItemDisplays.KeyAssets["WardOnLevel"],

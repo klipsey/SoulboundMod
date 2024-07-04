@@ -6,15 +6,19 @@ namespace SpiritboundMod.Modules
     {
         public const string agilePrefix = "<style=cIsUtility>Agile</style>";
 
-        public const string interrogatorPressuredPrefix = "Pressured";
+        public const string healingPrefix = "<color=#BBC6ED>Respite</color>";
 
         public static string agileKeyword = KeywordText("Agile", "The skill can be used while sprinting.");
 
         public static string slayerKeyword = KeywordText("Slayer", "The skill deals 2% more damage per 1% of health the target has lost, up to <style=cIsDamage>3x</style> damage.");
 
-        public static string interrogatorPressuredKeyword = KeywordText("Pressured", "Boost attack speed and move speed but lowers armor and damage (decreased ally negative stats).");
+        public static string respiteKeyword = KeywordText("Respite", $"Moving builds up <color=#BBC6ED>Respite</color>. Hitting an enemy with <color=#7E8DC4>Puncture</color> when below <style=cIsHealth>100% max health</style> " +
+            $"<style=cIsHealing>heals for {SpiritboundStaticValues.healCoefficient * 100f}%</style> <style=cIsHealth>missing health</style>.");
 
-        public static string interrogatorGuiltyKeyword = KeywordText("Ally Damage", "Allies take and deal less damage each other and Guilty expires from them after 10 seconds.");
+        public static string spiritBoundStacksKeyword = KeywordText("Stacks", $"Primary: Increased arrow velocity and <style=cIsDamage>{SpiritboundStaticValues.missingHPExecuteStacking * 100f}%</style> extra <style=cIsHealth>missing health</style> <style=cIsDamage>damage.</style> \n" +
+            $"Secondary: Fires an additional arrow and an additional wisp. \n" +
+            $"Utility: Increase explosion radius and fire an additional wisp. \n" +
+            $"Special: <color=#39456e>Wolf</color> deals <style=cIsDamage>{SpiritboundStaticValues.currentHpStacking * 100f}%</style> extra <style=cIsHealth>current health</style> <style=cIsDamage>damage</style>. ");
         public static string DamageText(string text)
         {
             return $"<style=cIsDamage>{text}</style>";

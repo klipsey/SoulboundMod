@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2135075897
+CRC: 2980195191
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5d3648652158ecac6932b45c0973e310
+    Hash: 478f3593402d1ed5281f10fa82975b2f
   TypeTreeHash:
     serializedVersion: 2
     Hash: f16c82b54d99b94b5175d199eeaa2843
@@ -108,6 +108,7 @@ Assets:
 - Assets/Spiritbound/Projectiles/ChargeFullEffect.prefab
 - Assets/Spiritbound/Projectiles/mdlImpPlaneSpike.fbx
 - Assets/Spiritbound/Materials/matHorn.mat
+- Assets/Spiritbound/Icons/texWolfIcon.png
 - Assets/Spiritbound/Materials/matBow.mat
 - Assets/Spiritbound/Meshes/meshBody.mesh
 - Assets/Spiritbound/HUD/WeaponChargeBar.prefab
@@ -140,7 +141,7 @@ Assets:
 - Assets/Spiritbound/AnimationsSpirit/maskSpiritGesture.mask
 - Assets/Spiritbound/Projectiles/matArrow.mat
 - Assets/Spiritbound/Projectiles/Cube.mesh
-- Assets/Spiritbound/Icons/texInterrogatorIcon.png
+- Assets/Spiritbound/Icons/texSpiritboundIcon.png
 - Assets/Spiritbound/SpiritboundDisplay.prefab
 - Assets/Spiritbound/Textures/texGlowPaintMask.png
 - Assets/Spiritbound/VFX/Badass/WoodHitEffect.prefab

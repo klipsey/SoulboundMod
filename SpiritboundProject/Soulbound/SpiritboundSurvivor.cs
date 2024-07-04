@@ -199,7 +199,7 @@ namespace SpiritboundMod.Spiritbound
                 skillNameToken = SOULBOUND_PREFIX + "PASSIVE_NAME",
                 skillDescriptionToken = SOULBOUND_PREFIX + "PASSIVE_DESCRIPTION",
                 skillIcon = assetBundle.LoadAsset<Sprite>("texSpiritboundPassive"),
-                keywordTokens = new string[] { Tokens.interrogatorGuiltyKeyword },
+                keywordTokens = new string[] { Tokens.spiritBoundStacksKeyword },
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "",
                 baseMaxStock = 1,
@@ -228,7 +228,7 @@ namespace SpiritboundMod.Spiritbound
                 skillName = "Bow",
                 skillNameToken = SOULBOUND_PREFIX + "PRIMARY_BOW_NAME",
                 skillDescriptionToken = SOULBOUND_PREFIX + "PRIMARY_BOW_DESCRIPTION",
-                keywordTokens = new string[] { Tokens.agileKeyword },
+                keywordTokens = new string[] { Tokens.agileKeyword, Tokens.respiteKeyword },
                 skillIcon = assetBundle.LoadAsset<Sprite>("tex"),
 
                 activationState = new SerializableEntityStateType(typeof(ChargeArrow)),
@@ -301,13 +301,13 @@ namespace SpiritboundMod.Spiritbound
                 skillNameToken = SOULBOUND_PREFIX + "UTILITY_SWAP_NAME",
                 skillDescriptionToken = SOULBOUND_PREFIX + "UTILITY_SWAP_DESCRIPTION",
                 keywordTokens = new string[] { },
-                skillIcon = assetBundle.LoadAsset<Sprite>("texFalsifyIcon"),
+                skillIcon = assetBundle.LoadAsset<Sprite>("tex"),
 
                 activationState = new SerializableEntityStateType(typeof(SwapWithSpirit)),
                 activationStateMachineName = "Dash",
-                interruptPriority = InterruptPriority.PrioritySkill,
+                interruptPriority = InterruptPriority.Skill,
 
-                baseRechargeInterval = 6f,
+                baseRechargeInterval = 8f,
                 baseMaxStock = 1,
 
                 rechargeStock = 1,
@@ -317,7 +317,7 @@ namespace SpiritboundMod.Spiritbound
                 resetCooldownTimerOnUse = false,
                 fullRestockOnAssign = true,
                 dontAllowPastMaxStocks = false,
-                mustKeyPress = false,
+                mustKeyPress = true,
                 beginSkillCooldownOnSkillEnd = false,
 
                 isCombatSkill = false,
@@ -344,7 +344,7 @@ namespace SpiritboundMod.Spiritbound
                 activationStateMachineName = "Weapon2",
                 interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
 
-                baseRechargeInterval = 10f,
+                baseRechargeInterval = 16f,
                 baseMaxStock = 1,
 
                 rechargeStock = 1,
@@ -516,7 +516,7 @@ namespace SpiritboundMod.Spiritbound
             {
                 if(self.baseNameToken == "KENKO_SPIRITBOUND_NAME")
                 {
-                    if (self.HasBuff(SpiritboundBuffs.movespeedHealStacksBuff)) self.moveSpeed += (self.GetBuffCount(SpiritboundBuffs.movespeedHealStacksBuff));
+                    if (self.HasBuff(SpiritboundBuffs.spiritMovespeedStacksBuff)) self.moveSpeed += (self.GetBuffCount(SpiritboundBuffs.spiritMovespeedStacksBuff));
                 }
             }
         }
@@ -539,7 +539,8 @@ namespace SpiritboundMod.Spiritbound
                         SpiritController spiritController = attackerBody.GetComponent<SpiritController>();
                         if (spiritController && victimBody && damageInfo.HasModdedDamageType(DamageTypes.CurrentHealthSpirit))
                         {
-                            damageInfo.damage += victimBody.healthComponent.health * (0.015f + (spiritController.owner.GetComponent<CharacterBody>().GetBuffCount(SpiritboundBuffs.soulStacksBuff) * 0.01f));
+                            damageInfo.damage += victimBody.healthComponent.health * (SpiritboundStaticValues.currentHPDamage + 
+                                (spiritController.owner.GetComponent<CharacterBody>().GetBuffCount(SpiritboundBuffs.soulStacksBuff) * SpiritboundStaticValues.currentHpStacking));
                         }
                     }
                 }
@@ -550,19 +551,23 @@ namespace SpiritboundMod.Spiritbound
         private static void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)
         {
             CharacterBody attackerBody = damageReport.attackerBody;
-            SpiritController spiritController;
-            if (NetworkServer.active && attackerBody && damageReport.attackerMaster && damageReport.victim)
+            if (NetworkServer.active && attackerBody && damageReport.victim)
             {
-                if(damageReport.victim.body.isBoss)
+                if(damageReport.victim.body.isBoss || damageReport.victim.body.isChampion)
                 {
                     if (attackerBody.baseNameToken == "KENKO_SPIRITBOUND_NAME")
                     {
-                        attackerBody.AddBuff(SpiritboundBuffs.soulStacksBuff);
+                        StackOrb orb = new StackOrb();
+                        orb.origin = damageReport.victim.transform.position;
+                        orb.target = Util.FindBodyMainHurtBox(attackerBody);
+                        RoR2.Orbs.OrbManager.instance.AddOrb(orb);
                     }
                     else if(attackerBody.baseNameToken == "KENKO_SPIRIT_NAME")
                     {
-                        spiritController = attackerBody.GetComponent<SpiritController>();
-                        spiritController.owner.GetComponent<CharacterBody>().AddBuff(SpiritboundBuffs.soulStacksBuff);
+                        StackOrb orb = new StackOrb();
+                        orb.origin = damageReport.victim.transform.position;
+                        orb.target = Util.FindBodyMainHurtBox(attackerBody.GetComponent<SpiritController>().owner);
+                        RoR2.Orbs.OrbManager.instance.AddOrb(orb);
                     }
                 }
             }

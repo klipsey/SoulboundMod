@@ -41,9 +41,9 @@ namespace SpiritboundMod.Spirit.SkillStates
 
             impactSound = SpiritboundAssets.biteImpactSoundEvent.index;
 
-            muzzleString = "HeadCenter";
+            muzzleString = "BiteMuzzleFlash";
 
-            moddedDamageTypeHolder.Add(DamageTypes.CurrentHealthSpirit);
+            if(characterBody.HasBuff(RoR2.RoR2Content.Buffs.WarCryBuff)) moddedDamageTypeHolder.Add(DamageTypes.CurrentHealthSpirit);
             base.OnEnter();
         }
 

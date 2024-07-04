@@ -9,7 +9,7 @@ namespace SpiritboundMod.Spiritbound.Content
         public static BuffDef mountingDreadBuff;
         public static BuffDef soulStacksBuff;
         public static BuffDef spiritHealBuff;
-        public static BuffDef movespeedHealStacksBuff;
+        public static BuffDef spiritMovespeedStacksBuff;
         public static BuffDef quickShotBuff;
         public static void Init(AssetBundle assetBundle)
         {
@@ -19,10 +19,10 @@ namespace SpiritboundMod.Spiritbound.Content
                 SpiritboundAssets.spiritBoundColor, true, false, false);
             spiritHealBuff = Modules.Content.CreateAndAddBuff("SpiritHealBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Croco/texBuffRegenBoostIcon.tif").WaitForCompletion(),
                 SpiritboundAssets.spiritBoundColor, false, false, false);
-            movespeedHealStacksBuff = Modules.Content.CreateAndAddBuff("SpiritSpeedBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
+            spiritMovespeedStacksBuff = Modules.Content.CreateAndAddBuff("SpiritSpeedBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
                     SpiritboundAssets.spiritBoundColor, true, false, false);
             quickShotBuff = Modules.Content.CreateAndAddBuff("SpiritQuickShotBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/AttackSpeedOnCrit/texBuffAttackSpeedOnCritIcon.tif").WaitForCompletion(),
-                    SpiritboundAssets.spiritBoundSecondaryColor, true, false, false);
+                    SpiritboundAssets.spiritBoundColor, true, false, false);
         }
     }
 }

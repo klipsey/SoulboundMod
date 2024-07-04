@@ -1,9 +1,9 @@
 {
-    "name": "Interrogator",
+    "name": "Spiritbound",
     "author": "tsuyoikenko",
-    "version_number": "0.6.0",
-    "website_url": "https://github.com/klipsey/InterrogatorMod",
-    "description": "Adds the Interrogator. Hit your friends!",
+    "version_number": "0.1.0",
+    "website_url": "https://github.com/klipsey/SoulboundMod",
+    "description": "Adds the Spiritbound. Beta no animations.",
     "dependencies": [
         "bbepis-BepInExPack-5.4.1905",
         "RiskofThunder-R2API_Core-5.0.3",

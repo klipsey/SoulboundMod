@@ -11,13 +11,13 @@ namespace SpiritboundMod.Spiritbound.Components
 {
     public class SpiritMasterComponent : MonoBehaviour, ILifeBehavior
     {
-        internal static GameObject summonPrefab;
+        public static GameObject summonPrefab;
 
         private CharacterMaster spiritMaster;
         private CharacterMaster characterMaster;
         private CharacterBody characterBody;
 
-        private Vector3 verticalOffset = new Vector3(0f, 10f, 0f);
+        private Vector3 verticalOffset = new Vector3(0f, 5f, 0f);
 
         public SpiritController spiritController;
         private void Start()
@@ -129,7 +129,7 @@ namespace SpiritboundMod.Spiritbound.Components
         {
             if (!spiritController) FindOrSummonSpirit();
 
-            if (Vector3.Distance(characterBody.corePosition, spiritController.characterBody.corePosition) >= 1000f)
+            if (Vector3.Distance(characterBody.corePosition, spiritController.characterBody.corePosition) >= 500f)
             {
                 Vector3 teleportPosition = characterBody.corePosition + verticalOffset;
                 TeleportHelper.TeleportBody(spiritController.characterBody, teleportPosition);
@@ -143,7 +143,7 @@ namespace SpiritboundMod.Spiritbound.Components
             else
             {
                 Vector3 travelPosition = characterBody.corePosition + verticalOffset;
-                spiritController.Redirect(travelPosition, 10f, false);
+                spiritController.Redirect(travelPosition, 5f, false);
             }
 
             spiritController.EnterFollowMode();
@@ -151,9 +151,11 @@ namespace SpiritboundMod.Spiritbound.Components
 
         public void RedirectOrder(Vector3 position, float minDistance)
         {
+            spiritController.EnterFollowMode();
             if (!spiritController) FindOrSummonSpirit();
-
             spiritController.Redirect(position, minDistance);
+            spiritController.EnterAttackMode();
+
         }
 
         public void OnDeathStart()

@@ -41,6 +41,8 @@ namespace SpiritboundMod.Spirit.Components
         private void Awake()
         {
             skillLocator = base.GetComponent<SkillLocator>();
+
+            this.Invoke("ApplyEffects", 0.3f);
         }
 
         private void Start()
@@ -83,6 +85,16 @@ namespace SpiritboundMod.Spirit.Components
             }
         }
 
+        public void ApplyEffects()
+        {
+            ModelLocator modelLocator = base.GetComponent<ModelLocator>();
+
+            ChildLocator childLocator = modelLocator.modelBaseTransform.GetComponentInChildren<ChildLocator>();
+
+            childLocator.FindChild("FireR").gameObject.GetComponent<ParticleSystemRenderer>().material = SpiritboundAssets.fireMatInFront;
+            childLocator.FindChild("FireL").gameObject.GetComponent<ParticleSystemRenderer>().material = SpiritboundAssets.fireMatInFront;
+        }
+
         public void SetTarget(HurtBox target)
         {
             HealthComponent healthComponent = target.healthComponent;
@@ -102,8 +114,7 @@ namespace SpiritboundMod.Spirit.Components
         {
             if (Util.HasEffectiveAuthority(owner))
             {
-                Util.PlaySound("Play_gravekeeper_spawn_01", base.gameObject);
-                EffectManager.SimpleEffect(SpiritboundAssets.bloodExplosionEffect, base.transform.position, Quaternion.identity, false);
+                Util.PlaySound("", base.gameObject);
             }
 
             if (attackMode) return;
@@ -128,7 +139,6 @@ namespace SpiritboundMod.Spirit.Components
             if (Util.HasEffectiveAuthority(owner))
             {
                 Util.PlaySound("Play_gravekeeper_death_01", base.gameObject);
-                EffectManager.SimpleEffect(SpiritboundAssets.bloodExplosionEffect, base.transform.position, Quaternion.identity, false);
             }
 
             if (!attackMode) return;
@@ -160,7 +170,7 @@ namespace SpiritboundMod.Spirit.Components
         }
         public void FreeOrb()
         {
-            this.bodyMachine.SetState(new SpiritBarrage());
+            this.weaponMachine.SetInterruptState(new SpiritBarrage(), EntityStates.InterruptPriority.PrioritySkill);
         }
         public void Redirect(Vector3 position, float minDistance, bool empower = true)
         {
@@ -201,9 +211,9 @@ namespace SpiritboundMod.Spirit.Components
 
         private void CreateHighlight(GameObject target)
         {
-            if (targetHighlight) UnityEngine.Object.Destroy(targetHighlight);
-
             if (target.GetComponent<Highlight>()) return;
+
+            if (targetHighlight) UnityEngine.Object.Destroy(targetHighlight);
 
             var modelLocator = target.GetComponent<ModelLocator>();
             if (modelLocator)

@@ -47,6 +47,7 @@ namespace SpiritboundMod.Spiritbound.Content
         internal static GameObject arrowMuzzleFlashEffect;
 
         internal static GameObject consumeOrb;
+        internal static GameObject spiritJarOpenEffect;
 
         //Models
 
@@ -56,13 +57,16 @@ namespace SpiritboundMod.Spiritbound.Content
 
         internal static GameObject chargedArrowPrefab;
         internal static GameObject chargedArrowGhostPrefab;
+
+        internal static GameObject spiritOrbPrefab;
+        internal static GameObject spiritOrbGhostPrefab;
         //Sounds
         internal static NetworkSoundEventDef biteImpactSoundEvent;
         internal static NetworkSoundEventDef swordImpactSoundEvent;
 
         //Colors
-        internal static Color spiritBoundColor = new Color(166f / 255f, 138f / 255f, 242f / 255f);
-        internal static Color spiritBoundSecondaryColor = new Color(186f / 255f, 202 / 255f, 255f / 255f);
+        internal static Color spiritBoundColor = new Color(126f / 255f, 141f / 255f, 196f / 255f);
+        internal static Color spiritBoundSecondaryColor = new Color(19f / 255f, 177f / 255f, 191f / 255f);
 
         //Crosshair
         internal static GameObject spiritboundCrosshair;
@@ -119,22 +123,36 @@ namespace SpiritboundMod.Spiritbound.Content
         #region effects
         private static void CreateEffects()
         {
+            spiritJarOpenEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Gravekeeper/GravekeeperJarOpen.prefab").WaitForCompletion().InstantiateClone("SpiritJarOpen");
+            if (!spiritJarOpenEffect.GetComponent<NetworkIdentity>()) spiritJarOpenEffect.AddComponent<NetworkIdentity>();
+            var mainJar = spiritJarOpenEffect.transform.Find("Ring").gameObject.GetComponent<ParticleSystem>().main;
+            mainJar.startColor = spiritBoundSecondaryColor;
+            spiritJarOpenEffect.transform.Find("FlamePuffs").gameObject.GetComponent<ParticleSystemRenderer>().material = fireMat;
+            spiritJarOpenEffect.transform.Find("FlamePuffs, Directional").gameObject.GetComponent<ParticleSystemRenderer>().material = fireMat;
+            spiritJarOpenEffect.transform.Find("Light").gameObject.GetComponent<Light>().color = spiritBoundSecondaryColor;
+
+            Modules.Content.CreateAndAddEffectDef(spiritJarOpenEffect);
+
             consumeOrb = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Effects/OrbEffects/InfusionOrbEffect"), "SpiritboundConsumeOrbEffect", true);
             if (!consumeOrb.GetComponent<NetworkIdentity>()) consumeOrb.AddComponent<NetworkIdentity>();
 
             TrailRenderer trail = consumeOrb.transform.Find("TrailParent").Find("Trail").GetComponent<TrailRenderer>();
             trail.widthMultiplier = 0.35f;
-            trail.material = Addressables.LoadAssetAsync<Material>("RoR2/Base/moon2/matBloodSiphon.mat").WaitForCompletion();
+            trail.material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/moon2/matBloodSiphon.mat").WaitForCompletion());
+            trail.material.SetColor("_TintColor", spiritBoundSecondaryColor);
 
             consumeOrb.transform.Find("VFX").Find("Core").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matBloodHumanLarge.mat").WaitForCompletion();
+            consumeOrb.transform.Find("VFX").Find("Core").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", spiritBoundSecondaryColor);
+            consumeOrb.transform.Find("VFX").Find("Core").GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             consumeOrb.transform.Find("VFX").localScale = Vector3.one * 0.5f;
-
             consumeOrb.transform.Find("VFX").Find("Core").localScale = Vector3.one * 4.5f;
 
+            var consumeMain = consumeOrb.transform.Find("VFX").Find("PulseGlow").GetComponent<ParticleSystem>().main;
+            consumeMain.startColor = new Color(19f / 255f, 177f / 255f, 191f / 255f, 0.6f);
             consumeOrb.transform.Find("VFX").Find("PulseGlow").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matOmniRing2Generic.mat").WaitForCompletion();
+            consumeOrb.transform.Find("VFX").Find("PulseGlow").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", spiritBoundSecondaryColor);
 
-
-            SpiritboundMod.Modules.Content.CreateAndAddEffectDef(consumeOrb);
+            Modules.Content.CreateAndAddEffectDef(consumeOrb);
 
             bloodExplosionEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ImpBoss/ImpBossBlink.prefab").WaitForCompletion().InstantiateClone("SpiritbombExplosion", false);
 
@@ -171,7 +189,7 @@ namespace SpiritboundMod.Spiritbound.Content
             dashEffect.transform.Find("Donut").localScale *= 0.5f;
             dashEffect.transform.Find("Donut, Distortion").localScale *= 0.5f;
             dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampDefault.png").WaitForCompletion());
-            dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", spiritBoundColor);
+            dashEffect.transform.Find("Dash").GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", spiritBoundSecondaryColor);
             Modules.Content.CreateAndAddEffectDef(dashEffect);
 
             bloodSplatterEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSlamImpact.prefab").WaitForCompletion().InstantiateClone("SpiritboundSplat", true);
@@ -201,16 +219,21 @@ namespace SpiritboundMod.Spiritbound.Content
             spiritboundHitEffect.GetComponent<OmniEffect>().enabled = false;
             spiritboundHitEffect.GetComponent<EffectComponent>().soundName = "Play_acrid_m2_bite_hit";
             Material material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Merc/matOmniHitspark3Merc.mat").WaitForCompletion());
-            material.SetColor("_TintColor", Color.red);
+            material.SetColor("_TintColor", spiritBoundSecondaryColor);
             spiritboundHitEffect.transform.GetChild(1).gameObject.GetComponent<ParticleSystemRenderer>().material = material;
             spiritboundHitEffect.transform.GetChild(2).localScale = Vector3.one * 1.5f;
             spiritboundHitEffect.transform.GetChild(2).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/VoidSurvivor/matVoidSurvivorBlasterFireCorrupted.mat").WaitForCompletion());
+            spiritboundHitEffect.transform.GetChild(2).gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpSlashImpact.mat").WaitForCompletion());
+            material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             spiritboundHitEffect.transform.GetChild(5).gameObject.GetComponent<ParticleSystemRenderer>().material = material;
             spiritboundHitEffect.transform.GetChild(4).localScale = Vector3.one * 3f;
             spiritboundHitEffect.transform.GetChild(4).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpDust.mat").WaitForCompletion());
+            spiritboundHitEffect.transform.GetChild(4).gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             spiritboundHitEffect.transform.GetChild(6).GetChild(0).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark1Void.mat").WaitForCompletion());
+            spiritboundHitEffect.transform.GetChild(6).GetChild(0).gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             spiritboundHitEffect.transform.GetChild(6).gameObject.GetComponent<ParticleSystemRenderer>().material = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark2Void.mat").WaitForCompletion());
+            spiritboundHitEffect.transform.GetChild(6).gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampWispSoul.png").WaitForCompletion());
             spiritboundHitEffect.transform.GetChild(1).localScale = Vector3.one * 1.5f;
             spiritboundHitEffect.transform.GetChild(1).gameObject.SetActive(true);
             spiritboundHitEffect.transform.GetChild(2).gameObject.SetActive(true);
@@ -227,7 +250,7 @@ namespace SpiritboundMod.Spiritbound.Content
             if (!spiritBiteEffect.GetComponent<NetworkIdentity>()) spiritBiteEffect.AddComponent<NetworkIdentity>();
             spiritBiteEffect.transform.Find("SwingTrail").gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png").WaitForCompletion());
             spiritBiteEffect.transform.Find("Goo").gameObject.GetComponent<ParticleSystemRenderer>().material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png").WaitForCompletion());
-            spiritBiteEffect.transform.Find("Point Light").gameObject.GetComponent<Light>().color = spiritBoundColor;
+            spiritBiteEffect.transform.Find("Point Light").gameObject.GetComponent<Light>().color = spiritBoundSecondaryColor;
 
             chargeEffect = mainAssetBundle.LoadAsset<GameObject>("ChargingEffect");
             var objectScaleCurve = chargeEffect.AddComponent<ObjectScaleCurve>();
@@ -270,9 +293,9 @@ namespace SpiritboundMod.Spiritbound.Content
             projectileSingleTargetImpact.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/OmniImpactVFXHuntress.prefab").WaitForCompletion();
             projectileSingleTargetImpact.hitSoundString = "Play_MULT_m1_smg_impact";
             arrowPrefab.AddComponent<AlignArrowComponent>();
+            arrowPrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
 
             Modules.Content.AddProjectilePrefab(arrowPrefab);
-
 
             chargedArrowGhostPrefab = mainAssetBundle.CreateProjectileGhostPrefab("ArrowChargedGhost", false);
 
@@ -297,6 +320,21 @@ namespace SpiritboundMod.Spiritbound.Content
             chargedArrowPrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
 
             Modules.Content.AddProjectilePrefab(chargedArrowPrefab);
+
+            spiritOrbGhostPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Gravekeeper/GravekeeperTrackingFireballGhost.prefab").WaitForCompletion().InstantiateClone("SpiritboundGhostOrb", false);
+            spiritOrbGhostPrefab.transform.Find("Point light").GetComponent<Light>().color = spiritBoundSecondaryColor;
+            spiritOrbGhostPrefab.transform.Find("Flames").GetComponent<ParticleSystemRenderer>().material = fireMat;
+            spiritOrbPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Gravekeeper/GravekeeperTrackingFireball.prefab").WaitForCompletion().InstantiateClone("SpiritboundOrb");
+            spiritOrbPrefab.GetComponent<ProjectileController>().ghostPrefab = spiritOrbGhostPrefab;
+            var pie = spiritOrbPrefab.gameObject.GetComponent<ProjectileImpactExplosion>();
+            pie.impactEffect = spiritboundHitEffect;
+            pie.destroyOnEnemy = true;
+            pie.lifetime = 7f;
+            pie.projectileHealthComponent = null;
+            UnityEngine.Object.Destroy(spiritOrbPrefab.transform.Find("Model").gameObject.GetComponent<HurtBoxGroup>());
+            UnityEngine.Object.Destroy(spiritOrbPrefab.transform.Find("Model").Find("Hurtbox").gameObject);
+            Component.Destroy(spiritOrbPrefab.GetComponent<DisableCollisionsBetweenColliders>());
+            Modules.Content.AddProjectilePrefab(spiritOrbPrefab);
         }
         #endregion
 

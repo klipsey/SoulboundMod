@@ -28,10 +28,11 @@ namespace SpiritboundMod.Spiritbound.SkillStates
             if (base.isAuthority)
             {
                 RaycastHit hitInfo;
-                Vector3 position = (!base.inputBank.GetAimRaycast(100f, out hitInfo) ? Vector3.MoveTowards(base.inputBank.GetAimRay().GetPoint(100f), base.transform.position, 5f) : Vector3.MoveTowards(hitInfo.point, base.transform.position, 5f));
-
-                spiritMasterComponent.RedirectOrder(position, 10f);
+                Vector3 calcPosition = (!base.inputBank.GetAimRaycast(100f, out hitInfo) ? Vector3.MoveTowards(base.inputBank.GetAimRay().GetPoint(100f), base.transform.position, 5f) : Vector3.MoveTowards(hitInfo.point, base.transform.position, 5f));
+                position = calcPosition;
             }
+
+            spiritMasterComponent.RedirectOrder(position, 10f);
 
             Util.PlaySound("sfx_interrogator_point", base.gameObject);
 

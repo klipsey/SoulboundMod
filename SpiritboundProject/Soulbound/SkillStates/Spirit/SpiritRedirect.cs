@@ -1,83 +1,32 @@
 ﻿using EntityStates;
 using EntityStates.GravekeeperMonster.Weapon;
 using RoR2;
-using RoR2.Projectile;
-using SpiritboundMod.Modules.BaseStates;
+using UnityEngine.Networking;
 using SpiritboundMod.Spirit.Components;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UIElements;
+using RoR2.Navigation;
+using System.Linq;
+using R2API;
 
 namespace SpiritboundMod.Spirit.SkillStates
 {
-    public class SpiritRedirect : BaseState
+    public class SpiritRedirect : SpiritLunge
     {
-        public static float giveUpDuration = 3f;
-        public static float speedCoefficient = 2f;
-
-        public Vector3 position;
-
-        public float minDistanceFromPoint;
-
         public bool isEmpower;
-
         public override void OnEnter()
         {
             base.OnEnter();
 
-            characterBody.isSprinting = true;
-
             if (NetworkServer.active && isEmpower)
             {
-                characterBody.AddTimedBuff(RoR2Content.Buffs.TeamWarCry, 6f);
-                gameObject.GetComponent<SpiritController>().inFrenzy = true;
-            }
-
-            if (minDistanceFromPoint <= 0f) minDistanceFromPoint = 1f;
-
-            PlayAnimation("FullBody, Override", "Dash", "Dash.playbackRate", giveUpDuration);
-        }
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-            bool reachedDistance = Vector3.Distance(position, base.characterBody.corePosition) <= minDistanceFromPoint;
-            bool failedToReachDistance = fixedAge >= giveUpDuration;
-
-            if ((reachedDistance || failedToReachDistance) && base.isAuthority)
-            {
-                if(reachedDistance && isEmpower) PerformInputs();
-                outer.SetNextStateToMain();
-            }
-
-            if (base.isAuthority)
-            {
-                base.rigidbodyDirection.aimDirection = (position - base.transform.position).normalized;
-                base.rigidbodyMotor.rootMotion += (position - base.transform.position).normalized * (speedCoefficient * moveSpeedStat * Time.fixedDeltaTime);
-            }
-        }
-
-        private void PerformInputs()
-        {
-            if (skillLocator)
-            {
-                if (inputBank.skill1.down && skillLocator.primary) skillLocator.primary.ExecuteIfReady();
-                if (inputBank.skill2.down && skillLocator.secondary) skillLocator.secondary.ExecuteIfReady();
+                characterBody.AddTimedBuff(RoR2Content.Buffs.WarCryBuff, 8f);
             }
         }
 
         public override void OnExit()
         {
-            characterBody.isSprinting = false;
-            PlayCrossfade("FullBody, Override", "BufferEmpty", 0.2f);
             base.OnExit();
+            if(isEmpower) base.gameObject.GetComponent<SpiritController>().inFrenzy = true;
         }
-
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            return InterruptPriority.PrioritySkill;
-        }
-
     }
 }

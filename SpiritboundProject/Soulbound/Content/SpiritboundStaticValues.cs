@@ -11,16 +11,26 @@ namespace SpiritboundMod.Spiritbound.Content
 
         public static float arrowFullDamageCoefficient = 6f;
 
-        public static float leapArrowDamageCoefficient = 1.5f;
+        public static float leapArrowDamageCoefficient = 2f;
 
-        public static float swapDamageCoefficient = 5f;
+        public static float swapDamageCoefficient = 4f;
+
+        public static float healCoefficient = 0.5f;
+
+        public static float healStacking = 0.05f;
 
         //Wolf
 
-        public static float spiritBiteDamageCoefficient = 2.5f;
+        public static float spiritBiteDamageCoefficient = 1.6f;
 
-        public static float wispDamageCoefficient = 2f;
-    
-        
+        public static float wispDamageCoefficient = 1.2f;
+
+        public static float missingHPExecuteDamage = 0.05f;
+
+        public static float missingHPExecuteStacking = 0.005f;
+
+        public static float currentHPDamage = 0.015f;
+
+        public static float currentHpStacking = 0.01f;
     }
 }

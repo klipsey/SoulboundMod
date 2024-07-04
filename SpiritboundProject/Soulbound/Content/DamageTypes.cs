@@ -19,11 +19,13 @@ namespace SpiritboundMod.Spiritbound.Content
     public static class DamageTypes
     {
         public static DamageAPI.ModdedDamageType Default;
+        public static DamageAPI.ModdedDamageType Heal;
         public static DamageAPI.ModdedDamageType MountingDread;
         public static DamageAPI.ModdedDamageType CurrentHealthSpirit;
         internal static void Init()
         {
             Default = DamageAPI.ReserveDamageType();
+            Heal = DamageAPI.ReserveDamageType();
             MountingDread = DamageAPI.ReserveDamageType();
             CurrentHealthSpirit = DamageAPI.ReserveDamageType();
             Hook();
@@ -51,10 +53,10 @@ namespace SpiritboundMod.Spiritbound.Content
             {
                 if (spiritBoundController && attackerBody.baseNameToken == "KENKO_SPIRITBOUND_NAME")
                 {
-                    if (damageReport.victim && attackerBody.HasBuff(SpiritboundBuffs.spiritHealBuff) && spiritBoundController.healAmount == 100f && attackerBody.healthComponent.health < attackerBody.healthComponent.fullHealth)
+                    if (damageReport.victim && damageInfo.HasModdedDamageType(Heal) && attackerBody.HasBuff(SpiritboundBuffs.spiritHealBuff) && spiritBoundController.healCounter == 100f && attackerBody.healthComponent.health < attackerBody.healthComponent.fullHealth)
                     {
                         attackerBody.SetBuffCount(SpiritboundBuffs.spiritHealBuff.buffIndex, 0);
-                        spiritBoundController.healAmount = 0f;
+                        spiritBoundController.healCounter = 0f;
                         HealOrb orb = new HealOrb();
                         orb.origin = damageReport.victim.transform.position;
                         orb.target = Util.FindBodyMainHurtBox(attackerBody);
@@ -71,7 +73,9 @@ namespace SpiritboundMod.Spiritbound.Content
                                 position = victimBody.corePosition,
                                 attacker = attackerBody.gameObject,
                                 inflictor = spiritMasterController.spiritController.gameObject,
-                                damage = (victimBody.healthComponent.fullCombinedHealth - victimBody.healthComponent.health) * (0.05f + (0.005f * attackerBody.GetBuffCount(SpiritboundBuffs.soulStacksBuff)))  + SpiritboundStaticValues.spiritBiteDamageCoefficient * attackerBody.damage ,
+                                damage = (victimBody.healthComponent.fullCombinedHealth - victimBody.healthComponent.health) * (SpiritboundStaticValues.missingHPExecuteDamage + 
+                                (SpiritboundStaticValues.missingHPExecuteStacking * attackerBody.GetBuffCount(SpiritboundBuffs.soulStacksBuff)))  + 
+                                SpiritboundStaticValues.spiritBiteDamageCoefficient * attackerBody.damage,
                                 damageColorIndex = DamageColorIndex.Default,
                                 damageType = DamageType.SlowOnHit,
                                 crit = damageInfo.crit,

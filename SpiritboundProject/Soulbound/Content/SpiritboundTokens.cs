@@ -23,60 +23,62 @@ namespace SpiritboundMod.Spiritbound.Content
         {
             #region Spiritbound
             string prefix = SpiritboundSurvivor.SOULBOUND_PREFIX;
+            string prefixWolf = SpiritCharacter.SPIRIT_PREFIX;
+            string desc = "mmmmfgfmmf kindred....<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > https://leagueoflegends.fandom.com/wiki/Kindred" + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > https://leagueoflegends.fandom.com/wiki/Kindred" + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > https://leagueoflegends.fandom.com/wiki/Kindred" + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > https://leagueoflegends.fandom.com/wiki/Kindred" + Environment.NewLine + Environment.NewLine;
 
-            string desc = "Spiritbound relishes the pain of others. Don't have too much fun hurting your allies, or do...<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Punish the Guilty after they hit you to gain attack speed and move speed. No running from justice." + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > If you need a quick and dirty Guilty buff, swing and hit yourself instead. The law applies to everyone!" + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Falsify is a great way to spot the Guilty before they commit crimes. Unethical? What do you mean?" + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Convict a Guilty target to make sure they are punished for their acts. Guilty until proven innocent after all." + Environment.NewLine + Environment.NewLine;
-
-            string lore = "Insert goodguy lore here";
-            string outro = "..and so he left, itching to enact more \"justice\".";
-            string outroFailure = "..and so he vanished, punished for his crimes.";
+            string lore = "Tell me again, little Lamb, which things are mine to take? \n\n All things, dear Wolf.";
+            string outro = "..and so they left, where Lamb went... Wolf was sure to follow.";
+            string outroFailure = "..and so they vanished, standing still in life.";
             
             Language.Add(prefix + "NAME", "Spiritbound");
+            Language.Add(prefixWolf + "NAME", "Spirit");
             Language.Add(prefix + "DESCRIPTION", desc);
             Language.Add(prefix + "SUBTITLE", "The Eternal");
             Language.Add(prefix + "LORE", lore);
             Language.Add(prefix + "OUTRO_FLAVOR", outro);
             Language.Add(prefix + "OUTRO_FAILURE", outroFailure);
-
+            //Lambs Color Code #BBC6ED
+            //Wolfs Color Code #39456e
             #region Skins
             Language.Add(prefix + "MASTERY_SKIN_NAME", "Alternate");
             #endregion
 
             #region Passive
-            Language.Add(prefix + "PASSIVE_NAME", "Torment");
-            Language.Add(prefix + "PASSIVE_DESCRIPTION", $"<color=#FFBF66>Spiritbound</color> can hit and be hit by both allies and enemies. " +
-                $"Attackers that have hit <color=#FFBF66>Spiritbound</color> are permanently marked as <color=#FFBF66>Guilty</color> granting <style=cIsDamage>attack speed</style> and <style=cIsDamage>damage</style> to Spiritbound until they die (Once per target).");
+            Language.Add(prefix + "PASSIVE_NAME", "Mark of the Grove");
+            Language.Add(prefix + "PASSIVE_DESCRIPTION", $"<color=#7E8DC4>Spiritbound</color> collects <color=#7E8DC4>spirits</color> upon <style=cIsHealth>defeating</style> boss enemies. " +
+                $"Each <color=#7E8DC4>spirit</color> permanently <style=cIsUtility>empowers</style> certain abilities.");
             #endregion
 
             #region Primary
-            Language.Add(prefix + "PRIMARY_SWING_NAME", "Brutal Bash");
-            Language.Add(prefix + "PRIMARY_SWING_DESCRIPTION", $"Swing in front dealing <style=cIsDamage>{5 * 100f}% damage</style>. " +
-                $"Missing the attack causes you to take <style=cIsDamage>damage</style> instead.");
+            Language.Add(prefix + "PRIMARY_BOW_NAME", "Puncture");
+            Language.Add(prefix + "PRIMARY_BOW_DESCRIPTION", Tokens.healingPrefix + $". <color=#BBC6ED>Lamb</color> charges an arrow dealing <style=cIsDamage>{SpiritboundStaticValues.arrowBaseDamageCoefficient * 100f}%-{SpiritboundStaticValues.arrowFullDamageCoefficient * 100f}% damage</style>. " +
+                $"Fully charged arrows apply <color=#39456e>mounting dread</color>. Upon reaching 3 stacks of <color=#39456e>mounting dread</color>, <color=#39456e>Wolf</color> lunges dealing " +
+                $"<style=cIsDamage>{SpiritboundStaticValues.missingHPExecuteDamage * 100f}%</style> of the targets <style=cIsHealth>missing health</style>.");
             #endregion
 
             #region Secondary
-            Language.Add(prefix + "SECONDARY_AFFRAY_NAME", "Affray");
-            Language.Add(prefix + "SECONDARY_AFFRAY_DESCRIPTION", $"<style=cIsDamage>Slayer.</style> Launch a cleaver that deals <style=cIsDamage>{5 * 100f}% damage</style>. " +
-                $"If <color=#FFBF66>Affray</color> kills its target, apply <style=cIsDamage>Hemmorhage</style> and <color=#FFBF66>Pressure</color> to everyone in the area.");
+            Language.Add(prefix + "SECONDARY_HOP_NAME", "Frolick");
+            Language.Add(prefix + "SECONDARY_HOP_DESCRIPTION", $"<color=#BBC6ED>Lamb</color> hops in a direction firing <style=cIsDamage>3</style> arrows dealing " +
+                $"<style=cIsDamage>{SpiritboundStaticValues.leapArrowDamageCoefficient * 100f}%</style> and gains <style=cIsDamage>temporary attackspeed</style> for <color=#7E8DC4>Puncture</color>. " +
+                $"<color=#7E8DC4>Spiritbound</color> then fire homing wisps that deal <style=cIsDamage>{SpiritboundStaticValues.wispDamageCoefficient * 100f}% damage</style>.");
             #endregion
 
             #region Utility 
-            Language.Add(prefix + "UTILITY_FALSIFY_NAME", "Falsify");
-            Language.Add(prefix + "UTILITY_FALSIFY_DESCRIPTION", $"Dash forward dealing <style=cIsDamage>{5 * 100f}% damage</style> applying <color=#FFBF66>Guilty</color> to targets hit.");
+            Language.Add(prefix + "UTILITY_SWAP_NAME", "Interlinked");
+            Language.Add(prefix + "UTILITY_SWAP_DESCRIPTION", $"<color=#BBC6ED>Lamb</color> swaps positions with <color=#39456e>Wolf</color>. " +
+                $"<color=#7E8DC4>Spiritbound</color> deal <style=cIsDamage>{SpiritboundStaticValues.swapDamageCoefficient * 100f}% damage</style> in an area and fire " +
+                $"homing wisps that deal <style=cIsDamage>{SpiritboundStaticValues.wispDamageCoefficient * 100f}% damage</style>.");
 
             #endregion
 
             #region Special
-            Language.Add(prefix + "SPECIAL_CONVICT_NAME", "Convict");
-            Language.Add(prefix + "SPECIAL_CONVICT_DESCRIPTION", $"Target a <color=#FFBF66>Guilty</color> enemy and fight them for 10 seconds. Your primary can no longer hit you but can continuously stack <color=#FFBF66>Guilty's</color> buff. " +
-                $"During <color=#FFBF66>Convict</color> all external <style=cIsDamage>damage</style> is negated including your own.");
-
-            Language.Add(prefix + "SPECIAL_SCEPTER_CONVICT_NAME", "Punish");
-            Language.Add(prefix + "SPECIAL_SCEPTER_CONVICT_DESCRIPTION", $"Target a <color=#FFBF66>Guilty</color> enemy and force them to fight you for 10 seconds. Your primary can no longer hit you but will continuously add <color=#FFBF66>Guilty's</color> buff to you. " +
-                $"During this time all external <style=cIsDamage>damage</style> is negated but all your <style=cIsDamage>damage</style> dealt to others is <style=cIsUtility>negated</style>." + Tokens.ScepterDescription("Convict can target enemies without Guilty and damage you deal is no longer negated but is reduced by 75%."));
+            Language.Add(prefix + "SPECIAL_REDIRECT_NAME", "Frenzy");
+            Language.Add(prefix + "SPECIAL_REDIRECT_DESCRIPTION", $"<color=#39456e>Wolf</color> is sent into a <style=cIsDamage>frenzy</style> and lunges to a targeted location. During the <style=cIsDamage>frenzy</style>, " +
+                $"<color=#7E8DC4>Frolick's</color> <style=cIsUtility>cooldown is lowered by 60%</style>. After the <style=cIsDamage>frenzy</style> ends, <color=#39456e>Wolf</color> returns to <color=#BBC6ED>Lamb</color>.");
             #endregion
 
             #region Achievements

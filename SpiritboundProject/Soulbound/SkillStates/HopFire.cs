@@ -13,14 +13,6 @@ namespace SpiritboundMod.Spiritbound.SkillStates
 {
     public class HopFire : BaseSpiritboundSkillState
     {
-        public GameObject projectilePrefab = GravekeeperBarrage.projectilePrefab;
-
-        public GameObject fireEffectPrefab = GravekeeperBarrage.jarOpenEffectPrefab;
-
-        public string fireSoundString = GravekeeperBarrage.jarOpenSoundString;
-
-        public float missileForce = GravekeeperBarrage.missileForce;
-
         private GameObject muzzleFlashEffect = SpiritboundAssets.arrowMuzzleFlashEffect;
         protected Vector3 hopVector;
         public float duration = 0.3f;
@@ -112,16 +104,6 @@ namespace SpiritboundMod.Spiritbound.SkillStates
             }
             return Vector3.Normalize(Quaternion.AngleAxis(num, axis) * inputBank.moveVector);
         }
-        private void FireBlob(Ray projectileRay, float bonusPitch, float bonusYaw)
-        {
-            projectileRay.direction = Util.ApplySpread(projectileRay.direction, 0f, 0f, 1f, 1f, bonusYaw, bonusPitch);
-            EffectManager.SimpleMuzzleFlash(muzzleFlashEffect, gameObject, "FirePack", transmit: false);
-            if (NetworkServer.active)
-            {
-                ProjectileManager.instance.FireProjectile(projectilePrefab, projectileRay.origin, 
-                    Util.QuaternionSafeLookRotation(projectileRay.direction), gameObject, damageStat * orbDamageCoefficient, missileForce, Util.CheckRoll(critStat, characterBody.master));
-            }
-        }
         public override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -130,15 +112,7 @@ namespace SpiritboundMod.Spiritbound.SkillStates
             {
                 fired = true;
                 Fire();
-                Ray projectileRay = default;
-                projectileRay.origin = transform.position;
-                projectileRay.direction = GetAimRay().direction;
-                float maxDistance = 1000f;
-                if (Physics.Raycast(GetAimRay(), out var hitInfo, maxDistance, LayerIndex.world.mask))
-                {
-                    projectileRay.direction = hitInfo.point - transform.position;
-                }
-                FireBlob(projectileRay, 0f, 0f);
+                EntityStateMachine.FindByCustomName(base.gameObject, "Weapon2").SetInterruptState(new SpiritBarrage(), InterruptPriority.PrioritySkill);
                 spiritMasterComponent.SpiritOrbOrder();
             }
 
@@ -147,6 +121,7 @@ namespace SpiritboundMod.Spiritbound.SkillStates
                 characterMotor.Motor.ForceUnground();
                 characterMotor.velocity = hopVector * speedCoefficient;
             }
+
             if (fixedAge >= this.duration && base.isAuthority)
             {
                 outer.SetNextStateToMain();
@@ -169,7 +144,8 @@ namespace SpiritboundMod.Spiritbound.SkillStates
 
                 if (hurtBoxes.Length > 0)
                 {
-                    int num = Mathf.Clamp(hurtBoxes.Length, 1, 3);
+                    int num = Mathf.Clamp(hurtBoxes.Length, 1, 3 + base.characterBody.GetBuffCount(SpiritboundBuffs.soulStacksBuff));
+
                     for(int i = 0; i < num; i++)
                     {
                         GenericDamageOrb genericDamageOrb = CreateArrowOrb();

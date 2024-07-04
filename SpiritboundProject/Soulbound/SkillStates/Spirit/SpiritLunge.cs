@@ -15,7 +15,7 @@ namespace SpiritboundMod.Spirit.SkillStates
     {
         public static float giveUpDuration = 3f;
 
-        public static float speedCoefficient = 2f;
+        public static float speedCoefficient = 6f;
 
         public Vector3 position;
 
@@ -25,7 +25,7 @@ namespace SpiritboundMod.Spirit.SkillStates
         {
             base.OnEnter();
 
-            characterBody.isSprinting = true;
+            base.characterBody.isSprinting = true;
             if (minDistanceFromPoint <= 0f) minDistanceFromPoint = 1f;
 
             PlayAnimation("FullBody, Override", "Dash", "Dash.playbackRate", giveUpDuration);
@@ -42,8 +42,8 @@ namespace SpiritboundMod.Spirit.SkillStates
 
             if ((reachedDistance || failedToReachDistance) && base.isAuthority)
             {
-                PerformInputs();
-                outer.SetNextStateToMain();
+                if (failedToReachDistance) this.characterMotor.Motor.SetPosition(position);
+                this.outer.SetNextStateToMain();
             }
 
             if (base.isAuthority)
@@ -55,17 +55,19 @@ namespace SpiritboundMod.Spirit.SkillStates
 
         private void PerformInputs()
         {
-            if (skillLocator)
+            if (base.skillLocator)
             {
-                if (inputBank.skill1.down && skillLocator.primary) skillLocator.primary.ExecuteIfReady();
-                if (inputBank.skill2.down && skillLocator.secondary) skillLocator.secondary.ExecuteIfReady();
+                if (base.inputBank.skill1.down && base.skillLocator.primary) base.skillLocator.primary.ExecuteIfReady();
+                if (base.inputBank.skill2.down && base.skillLocator.secondary) base.skillLocator.secondary.ExecuteIfReady();
+                if (base.inputBank.skill3.down && base.skillLocator.utility) base.skillLocator.utility.ExecuteIfReady();
+                if (base.inputBank.skill4.down && base.skillLocator.special) base.skillLocator.special.ExecuteIfReady();
             }
         }
 
         public override void OnExit()
         {
-            characterBody.isSprinting = false;
-            PlayCrossfade("FullBody, Override", "BufferEmpty", 0.2f);
+            base.characterBody.isSprinting = false;
+            base.PlayCrossfade("FullBody, Override", "BufferEmpty", 0.2f);
             base.OnExit();
         }
 
